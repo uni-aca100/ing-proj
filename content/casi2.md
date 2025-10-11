@@ -203,7 +203,7 @@ L’utente può avviare manualmente una procedura di diagnostica, oppure il sist
 Prima di avviare un ciclo di lavaggio, la lavatrice rileva automaticamente la presenza e la quantità di carico nel cestello. Il sistema utilizza queste informazioni per ottimizzare il ciclo o, in caso di assenza o anomalia del carico, per notificare l’utente e bloccare l’avvio del lavaggio.
 
 **Precondizioni:**  
-- La lavatrice è accesa e pronta per un nuovo ciclo.
+- Si è in procinto di effettuare un ciclo di lavaggio (il ciclo è stato programmato o avviato, ma non ancora iniziato fisicamente).
 
 **Flusso principale degli eventi:**  
 1. La lavatrice esegue il rilevamento automatico del carico nel cestello.
