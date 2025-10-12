@@ -9,16 +9,18 @@ Il sistema controlla e coordina l’esecuzione del ciclo di lavaggio, comandando
 
 **Flusso principale degli eventi:**  
 1. Il sistema invia i parametri del ciclo di lavaggio alla lavatrice.
-2. La lavatrice avvia il riempimento dell’acqua.
-3. La lavatrice esegue la fase di lavaggio.
-4. La lavatrice esegue il risciacquo.
-5. La lavatrice esegue la centrifuga.
-6. La lavatrice scarica l’acqua residua.
-7. Il sistema richiama il caso d’uso "Invio Notifica" per notificare il completamento del ciclo.
+2. richiama il caso d’uso "Rilevamento Carico"
+3. La lavatrice avvia il riempimento dell’acqua.
+4. La lavatrice esegue la fase di lavaggio.
+5. La lavatrice esegue il risciacquo.
+6. La lavatrice esegue la centrifuga.
+7. La lavatrice scarica l’acqua residua.
+8. Se durante il ciclo si verifica un errore tecnico (es. guasto, blocco, errore sensore), il sistema mette in pausa il ciclo, richiama il caso d’uso "Invio Notifica" per notificare l'errore e suggerisce eventuali azioni correttive (es. reset lavatrice).
+9. Al termine del ciclo, il sistema richiama il caso d’uso "Invio Notifica" per notificare il completamento del ciclo.
 
 **Inclusioni:**  
-- [Include: Invio Notifica] Al termine del ciclo, il sistema invia una notifica di completamento.
-- [Include: Errore tecnico] In caso di malfunzionamento o anomalia, può essere attivato il caso d’uso "Errore tecnico".
+- [Include: Rilevamento Carico] Prima di avviare il ciclo, il sistema esegue il rilevamento automatico del carico.
+- [Include: Invio Notifica] Al termine del ciclo, il sistema invia una notifica di completamento, o in caso di errore tecnico.
 
 **Postcondizioni:**  
 - Il ciclo di lavaggio è completato.
@@ -89,30 +91,6 @@ L’utente o il sistema può richiedere l’annullamento del ciclo di lavaggio d
 
 ---
 
-**Caso d’uso:** Errore tecnico  
-**Attore principale:** Lavatrice  
-**Attore secondario:** Sistema (riceve la segnalazione di errore e gestisce la comunicazione)  
-**Descrizione:**  
-Durante l’esecuzione del ciclo di lavaggio, la lavatrice rileva un malfunzionamento o un’anomalia tecnica (es. guasto, blocco, errore sensore).
-
-**Condizioni di entrata:**  
-- Il caso d’uso viene attivato come estensione durante "Esecuzione Ciclo di Lavaggio".
-
-**Inclusioni:**  
-- [Include: Pausa ciclo] La lavatrice mette in pausa il ciclo per sicurezza prima di gestire l’errore.
-- [Include: Invio Notifica] Il sistema invia una notifica di errore.
-
-**Flusso principale degli eventi:**  
-1. La lavatrice rileva un errore tecnico.
-2. La lavatrice mette in pausa il ciclo (richiama il caso d’uso "Pausa ciclo").
-3. La lavatrice richiama il caso d’uso "Invio Notifica" per notificare l’errore e fornisce eventuali informazioni sul tipo di errore.
-
-**Postcondizioni:**  
-- Il ciclo di lavaggio è interrotto a causa di un errore.
-- Il sistema e/o l’utente sono informati dell’errore.
-
----
-
 **Caso d’uso:** Invio Notifica  
 **Attore principale:** Lavatrice o Sistema  
 **Descrizione:**  
@@ -145,6 +123,9 @@ L’utente programma l’esecuzione di un ciclo di lavaggio, scegliendo se avvia
 
 **Generalizzazioni:**  
 - [Generalizza: Avvio Lavaggio] Se l’utente sceglie l’avvio immediato.
+
+**Inclusioni:**  
+- [Include: Esecuzione Ciclo di Lavaggio] L’esecuzione del ciclo viene avviata automaticamente o immediatamente secondo la pianificazione.
 
 **Postcondizioni:**  
 - Il ciclo di lavaggio è programmato e verrà eseguito automaticamente all’orario scelto oppure avviato subito.
@@ -188,7 +169,6 @@ L’utente può avviare manualmente una procedura di diagnostica, oppure il sist
 
 **Inclusioni:**  
 - [Include: Invio Notifica] Il sistema invia una notifica con il report della diagnostica.
-- [Include: Errore tecnico] Se viene rilevato un malfunzionamento durante la diagnostica, viene attivato il caso d’uso "Errore tecnico".
 
 **Postcondizioni:**  
 - L’utente riceve un report sull’esito della diagnostica.
@@ -209,11 +189,8 @@ Prima di avviare un ciclo di lavaggio, la lavatrice rileva automaticamente la pr
 1. La lavatrice esegue il rilevamento automatico del carico nel cestello.
 2. La lavatrice comunica i dati rilevati al sistema.
 3. Il sistema valuta la presenza e la quantità di carico.
-4. Se il carico è assente o anomalo, il sistema attiva il caso d’uso "Errore tecnico" per informare l’utente.
+4. Se il carico è assente o anomalo, il sistema attiva un errore tecnico per informare l’utente.
 5. Se il carico è corretto, il sistema procede con l’avvio del ciclo di lavaggio.
-
-**Inclusioni:** 
-- [Include: Errore tecnico] Se il carico è assente o anomalo.
 
 **Postcondizioni:**  
 - Il sistema ha ricevuto i dati sul carico e agisce di conseguenza (avvio ciclo o segnalazione errore).
@@ -236,9 +213,6 @@ L’utente, tramite l’interfaccia, o il sistema in modo automatico, può avvia
 3. La lavatrice interrompe tutte le operazioni in corso.
 4. La lavatrice scarica eventuale acqua residua e azzera gli errori.
 5. Il sistema richiama il caso d’uso "Invio Notifica" per comunicare l’esito del reset all’utente.
-
-**Estensioni:**  
-- [Estende: Errore tecnico] Se il reset viene richiesto a seguito di un errore tecnico.
 
 **Inclusioni:**  
 - [Include: Invio Notifica] Il sistema invia una notifica all’utente sull’esito del reset.
