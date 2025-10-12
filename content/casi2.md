@@ -270,3 +270,56 @@ L’utente può annullare in qualsiasi momento l’ottimizzazione dei consumi en
 **Postcondizioni:**  
 - L’ottimizzazione IoT è disattivata e il ciclo di lavaggio segue le modalità standard.
 - L’utente è informato dell’annullamento.
+
+---
+
+**Caso d’uso:** Associa Dispositivo IoT  
+**Attore principale:** Utente  
+**Attore secondario:** Sistema, Dispositivi IoT esterni  
+**Descrizione:**  
+L’utente può associare un nuovo dispositivo IoT compatibile (es. termostato, Contatore intelligente) al sistema della lavatrice per abilitare funzionalità avanzate di integrazione e ottimizzazione dei consumi. L’associazione può avvenire tramite una procedura guidata nell’interfaccia utente, che rileva i dispositivi disponibili e ne consente la configurazione.
+
+**Precondizioni:**  
+- Il dispositivo IoT è acceso e in modalità di associazione.  
+- La lavatrice è connessa alla rete domestica.
+
+**Flusso principale degli eventi:**  
+1. L’utente seleziona l’opzione per aggiungere un nuovo dispositivo IoT tramite l’interfaccia.  
+2. Il sistema esegue la scansione della rete per rilevare dispositivi IoT compatibili.  
+3. L’utente seleziona il dispositivo da associare dall’elenco proposto.  
+4. Il sistema avvia la procedura di associazione e configura il dispositivo per l’integrazione con la lavatrice.  
+5. Il sistema richiama il caso d’uso "Invio Notifica" per confermare l’avvenuta associazione o segnalare eventuali errori.
+
+**Inclusioni:**  
+- [Include: Invio Notifica] Il sistema invia una notifica all’utente sull’esito dell’associazione.
+
+**Postcondizioni:**  
+- Il nuovo dispositivo IoT è associato e pronto per l’integrazione con la lavatrice.  
+- L’utente è informato dell’esito dell’operazione.
+
+---
+
+**Caso d’uso:** Dissocia Dispositivo IoT  
+**Attore principale:** Utente  
+**Attore secondario:** Sistema, Dispositivi IoT esterni  
+**Descrizione:**  
+L’utente può dissociare un dispositivo IoT precedentemente associato alla lavatrice, interrompendo la comunicazione e l’integrazione tra i due sistemi. La dissociazione può essere richiesta tramite l’interfaccia utente, che mostra l’elenco dei dispositivi attualmente associati e consente la selezione di quello da rimuovere.
+
+**Precondizioni:**  
+- Esistono uno o più dispositivi IoT già associati alla lavatrice.  
+- La lavatrice è connessa alla rete domestica.
+
+**Flusso principale degli eventi:**  
+1. L’utente seleziona l’opzione per dissociare un dispositivo IoT tramite l’interfaccia.  
+2. Il sistema mostra l’elenco dei dispositivi IoT associati.  
+3. L’utente seleziona il dispositivo da dissociare.  
+4. Il sistema avvia la procedura di dissociazione e rimuove la configurazione relativa al dispositivo.  
+5. Il sistema comunica al dispositivo IoT la richiesta di disconnessione, se supportato.  
+6. Il sistema richiama il caso d’uso "Invio Notifica" per confermare l’avvenuta dissociazione o segnalare eventuali errori.
+
+**Inclusioni:**  
+- [Include: Invio Notifica] Il sistema invia una notifica all’utente sull’esito della dissociazione.
+
+**Postcondizioni:**  
+- Il dispositivo IoT selezionato è stato dissociato e non comunica più con la lavatrice.  
+- L’utente è informato dell’esito dell’operazione.
