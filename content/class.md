@@ -47,7 +47,7 @@ class CyclePlanningController is
 ```
 interface ICyclePlanningService is
     // Metodi
-    pianificaCicloUtente(parametriPiano: map<string, string>, dataOra: DateTime)
+    pianificaCiclo(parametriPiano: map<string, string>, dataOra: DateTime)
 ```
 // Descrizione: Application Service che espone le operazioni di pianificazione ciclo verso il Presentation Layer. Riceve i parametri dal livello superiore, li valida e li inoltra all'implementazione concreta.
 
