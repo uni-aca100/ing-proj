@@ -68,6 +68,18 @@ class WashControlController is
 ```
 // Descrizione: Controller del Presentation Layer che espone le operazioni di controllo ciclo (pausa, riprendi, annulla, stato) verso la UI. Riceve i comandi dalle view/menu e li inoltra al WashingControlService eventualmente dopo un verifica sullo stato corrente.
 
+**Classe VoiceCommandDispatcher**
+```
+class VoiceCommandDispatcher is
+    // Attributi
+    washPlanningController: WashPlanningController
+    washControlController: WashControlController
+
+    // Metodi
+    dispatch(voiceCommand: string)
+```
+// Descrizione: Riceve l’azione vocale già interpretata dall’Application Layer (VoiceAction) e chiama il controller appropriato nel Presentation Layer (es. WashPlanningController, WashControlController) per eseguire l’operazione richiesta.
+
 ---
 
 ## Application Layer
@@ -172,6 +184,24 @@ interface ClockObserver is
     onTick(currentTime: DateTime) // chiamato dal Clock ad ogni tick
 ```
 
+**Classe VoiceCommandInterpreter**
+```
+class VoiceCommandInterpreter is implements VoiceObserver
+    // Attributi
+    dispatcher: VoiceCommandDispatcher // riferimento al dispatcher del Presentation Layer
+    // Metodi
+    interpretaComandoVocale(comando: string) // dispatcher.dispatch()
+    onVoiceSignal(comando: string)
+```
+// Descrizione: Interpreta il segnale vocale ricevuto dal Hardware Layer tramite VoiceSignalReceiver, analizza il segnale e lo trasforma in una commando da inoltrare al Presentation Layer tramite il dispatcher.
+
+**Interfaccia VoiceObserver**
+```
+interface VoiceObserver is
+    // Metodi
+    onVoiceSignal(comando: string) // chiamato dal VoiceInputDevice ad ogni ricezione
+```
+
 ---
 
 ## Hardware Abstraction Layer
@@ -200,6 +230,15 @@ interface ILavatriceHardware is
 ```
 // Descrizione: Espone i comandi per il controllo diretto dell'hardware della lavatrice. Utilizzato da WashingManager.
 
+**Interfaccia VoiceInputDevice**
+```
+interface VoiceInputDevice is
+    // Metodi
+    subscribe(observer: VoiceObserver)
+    notifyObserverSignalReceived()
+```
+// Descrizione: Interfaccia dell'Hardware Layer che gestisce la ricezione di segnali vocali dal microfono o modulo di riconoscimento. Quando riceve un comando vocale, lo inoltra al VoiceObserver (in questo caso VoiceCommandInterpreter dell'Application Layer).
+
 ### Relazioni
 
 **Relazioni principali:**
@@ -218,6 +257,7 @@ interface ILavatriceHardware is
 - WashingManager *implementa* WashingControlService
 - WashControlController *utilizza* WashingControlService per il controllo ciclo (dipendenza Presentation → Application Layer).
 - WashControlMenu *utilizza* WashControlController per inviare i comandi di controllo (dipendenza Presentation → Controller).
+- VoiceCommandInterpreter *invia* il commando intepretato a VoiceCommandDispatcher (Application → Presentation Layer): il risultato dell'interpretazione viene passato al dispatcher che lo inoltra al controller appropriato.
 
 **Dependency**:
 - WashPlanningService 'utilizza' PianoLavaggio per la creazione di nuovo Piano
