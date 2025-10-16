@@ -377,7 +377,7 @@ L’utente che ha dimenticato la password può avviare la procedura di recupero,
 
 ---
 
-**Caso d’uso:** Login per Reset  
+**Caso d’uso:** Utente non Autenticato
 **Attore principale:** Utente  
 **Descrizione:**  
 Se l’utente non è autenticato e tenta di eseguire il reset della lavatrice, il sistema attiva la procedura di login specifica per questa operazione protetta.
