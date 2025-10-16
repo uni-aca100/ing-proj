@@ -323,3 +323,83 @@ L’utente può dissociare un dispositivo IoT precedentemente associato alla lav
 **Postcondizioni:**  
 - Il dispositivo IoT selezionato è stato dissociato e non comunica più con la lavatrice.  
 - L’utente è informato dell’esito dell’operazione.
+
+---
+
+**Caso d’uso:** Login  
+**Attore principale:** Utente  
+**Descrizione:**  
+L’utente inserisce le proprie credenziali (username/email e password) per autenticarsi nel sistema della lavatrice intelligente, accedendo così alle funzionalità personalizzate e protette.
+
+**Precondizioni:**  
+- L’utente è già registrato nel sistema.
+
+**Flusso principale degli eventi:**  
+1. L’utente seleziona l’opzione di login sull’interfaccia (display o app).
+2. Il sistema richiede l’inserimento di username/email e password.
+3. L’utente inserisce le credenziali richieste.
+4. Il sistema verifica la correttezza delle credenziali.
+5. Se le credenziali sono corrette, l’utente accede alle funzionalità protette.
+6. Se le credenziali sono errate, il sistema mostra un messaggio di errore e consente un nuovo tentativo.
+
+**Postcondizioni:**  
+- L’utente è autenticato e può accedere alle funzionalità riservate.
+
+---
+
+**Caso d’uso:** Recupero password  
+**Attore principale:** Utente  
+**Descrizione:**  
+L’utente che ha dimenticato la password può avviare la procedura di recupero, ricevendo codice per reimpostare la password e poter accedere nuovamente al sistema.
+
+**Precondizioni:**  
+- L’utente è registrato nel sistema.
+- L’utente non ricorda la password.
+
+**Flusso principale degli eventi:**  
+1. L’utente seleziona “Recupero password” dalla schermata di login.
+2. Il sistema richiede l’inserimento dell’email o username.
+3. L’utente inserisce l’email/username.
+4. Il sistema verifica la presenza dell’utente.
+5. Se l’utente esiste, il sistema invia un’email/SMS con il codice di reset.
+6. L’utente inserisce il codice ricevuto.
+7. Il sistema richiede l’inserimento di una nuova password.
+8. L’utente inserisce e conferma la nuova password.
+9. Il sistema aggiorna la password e conferma l’avvenuto reset.
+10. L’utente può ora effettuare il login con la nuova password.
+
+**Estensioni:**  
+- [Estende: Login] Il caso d’uso viene attivato dalla schermata di login.
+
+**Postcondizioni:**  
+- La password dell’utente è stata reimpostata.
+- L’utente può accedere nuovamente al sistema.
+
+---
+
+**Caso d’uso:** Login per Reset  
+**Attore principale:** Utente  
+**Descrizione:**  
+Se l’utente non è autenticato e tenta di eseguire il reset della lavatrice, il sistema attiva la procedura di login specifica per questa operazione protetta.
+
+**Precondizioni:**  
+- L’utente non è autenticato.
+- L’utente ha richiesto il reset della lavatrice.
+
+**Flusso principale degli eventi:**  
+1. L’utente seleziona l’opzione di reset.
+2. Il sistema rileva che l’utente non è autenticato.
+3. Il sistema Richiama il caso d’uso "Login" per autenticare l’utente.
+4. Se l’autenticazione ha successo, il sistema consente l’operazione di reset.
+5. Se errate, il sistema mostra un messaggio di errore e consente un nuovo tentativo.
+
+**Inclusioni:**  
+- [Include: Login] Il caso d’uso include il flusso di autenticazione standard.
+
+**Estensioni:**  
+- [Estende: Reset Lavatrice] Il caso d’uso viene attivato solo se l’utente non è autenticato.
+
+**Postcondizioni:**  
+- L’utente è autenticato e può completare il reset della lavatrice.
+
+---
