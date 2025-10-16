@@ -2,42 +2,71 @@
 
 ## Presentation Layer
 
-**Classe CyclePlanningForm**
+**Classe WashPlanningForm**
 ```
-class CyclePlanningForm is
+class WashPlanningForm is
     // Attributi
     parametriPiano: map<string, string> // input utente (nome, temperatura, durata, ecc.)
     dataOra: DateTime // data/ora pianificazione
-    controller: CyclePlanningController // riferimento al controller
+    controller: WashPlanningController // riferimento al controller
 
     // Metodi
-    submit()  // chiama controller.onPianificaCiclo(parametriPiano, now)
+    submit()  // chiama controller.onPianificaLavaggio(parametriPiano, now)
 ```
-// Descrizione: Form/view del Presentation Layer per la pianificazione di un ciclo (rappresenta la UI per la raccolta dei dati di pianificazione dal’utente). Raccoglie i dati dall’utente e, al submit, invoca il metodo onPianificaCiclo del controller passando i parametri inseriti.
+// Descrizione: Form/view del Presentation Layer per la pianificazione di un ciclo (rappresenta la UI per la raccolta dei dati di pianificazione dal’utente). Raccoglie i dati dall’utente e, al submit, invoca il metodo onPianificaLavaggio del controller passando i parametri inseriti.
 
-**Classe StartCycleForm**
+**Classe WashStartForm**
 ```
-class StartCycleForm is
+class WashStartForm is
     // Attributi
     parametriPiano: map<string, string> // con alcuni campi precompilati (eventualmente nascosti)
     dataOra: DateTime = now // campo nascosto o preimpostato all'istante corrente
-    controller: CyclePlanningController // riferimento al controller
+    controller: WashPlanningController // riferimento al controller
 
     // Metodi
-    submit() // chiama controller.onPianificaCiclo(parametriPiano, now)
+    submit() // chiama controller.onPianificaLavaggio(parametriPiano, now)
 ```
-// Descrizione: Form/view specializzato per l'avvio immediato del lavaggio (rappresenta la UI per la raccolta dei dati del piano di lavaggio dal’utente). Al submit invia i parametri e la data/ora corrente al controller tramite onPianificaCiclo.
+// Descrizione: Form/view specializzato per l'avvio immediato del lavaggio (rappresenta la UI per la raccolta dei dati del piano di lavaggio dal’utente). Al submit invia i parametri e la data/ora corrente al controller tramite onPianificaLavaggio.
 
-**Classe CyclePlanningController**
+**Classe WashPlanningController**
 ```
-class CyclePlanningController is
+class WashPlanningController is
     // Attributi
-    cyclePlanningService: ICyclePlanningService // dipendenza verso Application Service
+    WashPlanningService: IWashPlanningService // dipendenza verso Application Service
 
     // Metodi
-    onPianificaCiclo(parametriPiano: map<string, string>, dataOra: DateTime)
+    onPianificaLavaggio(parametriPiano: map<string, string>, dataOra: DateTime)
 ```
-// Descrizione: Controller "sottile" (non contiene logica di business, delegata all'application Service) del Presentation Layer. che riceve i dati dal form/view per la pianificazione di cicli di lavaggio, ed un eventuale validazione lato presentazione (es. campi mancati). Gestisce l'iterazione con ICyclePlanningService (dell'application layer)
+// Descrizione: Controller "sottile" (non contiene logica di business, delegata all'application Service) del Presentation Layer. che riceve i dati dal form/view per la pianificazione di cicli di lavaggio, ed un eventuale validazione lato presentazione (es. campi mancati). Gestisce l'iterazione con IWashPlanningService (dell'application layer)
+
+**Classe WashControlMenu**
+```
+class WashControlMenu is
+    // Attributi
+    controller: WashControlController // riferimento al controller
+
+    // Metodi
+    buttonsRendering() // alternativa rappresentazione separata
+    stateRendering()
+    inviaComandoPausa() // chiama eventualmente controller.onPausaLavaggio()
+    inviaComandoRiprendi() // chiama eventualmente controller.onriPrendiLavaggio()
+    inviaComandoAnnulla() // chiama eventualmente controller.onPausaLavaggio()
+```
+// Descrizione: Menu/view del Presentation Layer che offre all’utente i comandi di controllo del lavaggio (pausa, riprendi, annulla) e visualizza lo stato corrente del lavaggio. Interagisce con WashControlController per inoltrare i comandi.
+
+**Classe WashControlController**
+```
+class WashControlController is
+    // Attributi
+    washingControlService: WashingControlService // dipendenza verso Application Service
+
+    // Metodi
+    onPausaLavaggio() // chiama eventualmente WashingControlService.pausaLavaggio()()
+    onRiprendiLavaggio() // ...
+    onAnnullaLavaggio()
+    onGetState()
+```
+// Descrizione: Controller del Presentation Layer che espone le operazioni di controllo ciclo (pausa, riprendi, annulla, stato) verso la UI. Riceve i comandi dalle view/menu e li inoltra al WashingControlService eventualmente dopo un verifica sullo stato corrente.
 
 ---
 
@@ -45,38 +74,38 @@ class CyclePlanningController is
 
 **Interfaccia servizioPianificazioneCicli**
 ```
-interface ICyclePlanningService is
+interface IWashPlanningService is
     // Metodi
-    pianificaCiclo(parametriPiano: map<string, string>, dataOra: DateTime)
+    pianificaLavaggio(parametriPiano: map<string, string>, dataOra: DateTime)
 ```
 // Descrizione: Application Service che espone le operazioni di pianificazione ciclo verso il Presentation Layer. Riceve i parametri dal livello superiore, li valida e li inoltra all'implementazione concreta.
 
 **Classe servizioPianificazioneCicli**
 ```
-class CyclePlanningService is
+class WashPlanningService implements IWashPlanningService  is
     // Attributi
     scheduler: Scheduler // associazione/collaborazione
 
     // Metodi
     validaParametri(parametriPiano: map<string, string>) 
-    pianificaCiclo(parametriPiano: map<string, string>, dataOra: DateTime)
+    pianificaLavaggio(parametriPiano: map<string, string>, dataOra: DateTime)
 ```
-// Descrizione: Implementa ICyclePlanningService. Si occupa di validare i parametri ricevuti dal Presentation Layer, creare oggetti PianoLavaggio e Schedule, e aggiungere la pianificazione allo Scheduler.
+// Descrizione: Implementa IWashPlanningService. Si occupa di validare i parametri ricevuti dal Presentation Layer, creare oggetti PianoLavaggio e Schedule, e aggiungere la pianificazione allo Scheduler.
 
 **Classe Scheduler**
 ```
-class Scheduler is
+class Scheduler implements ClockObserver is
     // Attributi
     schedules: List<Schedule>
-    cycleManager: CycleManager // associazione/collaborazione
+    manager: WashingManager // associazione/collaborazione
 
     // Metodi
     validaSchedule(sch: schedule);
     aggiungiSchedule(newShedule: schedule)
-    avviaCiclo(piano: PianoLavaggio) // invoca CycleManager.avviaCiclo()
+    avviaCiclo(piano: PianoLavaggio) // invoca manager.avviaCiclo()
     onTick(currentTime: DateTime) // reazione allo scorrere del tempo
 ```
-// Descrizione: Si occupa della pianificazione e gestione temporale dei cicli di lavaggio. Mantiene la lista delle pianificazioni (Schedule), riceve eventi temporali (onTick) e, quando necessario, delega l'esecuzione dei cicli al CycleManager. Garantisce la separazione tra logica di scheduling e logica di esecuzione.
+// Descrizione: Si occupa della pianificazione e gestione temporale dei cicli di lavaggio. Mantiene la lista delle pianificazioni (Schedule), riceve eventi temporali (onTick) e, quando necessario, delega l'esecuzione dei cicli al WashingManager. Garantisce la separazione tra logica di scheduling e logica di esecuzione.
 
 **Classe Schedule**
 ```
@@ -105,21 +134,34 @@ class PianoLavaggio is
     validaParametri()
 ```
 
-**Classe GestoreCiclo**
+**interfaccia WashingControlService**
 ```
-class CycleManager is
+class WashingControlService is
+    // Metodi
+    pausaLavaggio()
+    riprendiLavaggio()
+    annullaLavaggio()
+    getState()
+```
+// Descrizione: Application Service che espone le operazioni di controllo del ciclo di lavaggio di lavaggio in corso (pausa, riprendi, annulla) verso il Presentation Layer. Riceve le richieste dal livello superiore per il controllo del lavaggio in cosrso.
+
+
+**Classe Gestore lavaggio**
+```
+class WashingManager implements WashingControlService is
     // Attributi
-    stato: StatoCiclo // es: in esecuzione, in pausa, completato, errore
+    stato: StatoLavaggio // es: in esecuzione, in pausa, completato, errore
     piano: PianoLavaggio
     hardware: LavatriceHardwareInterface
 
     // Metodi
-    avviaCiclo(piano: PianoLavaggio)
-    pausaCiclo()
-    riprendiCiclo()
-    annullaCiclo()
+    avviaLavaggio(piano: PianoLavaggio)
+    pausaLavaggio()
+    riprendiLavaggio()
+    annullaLavaggio()
     gestisciErrore(errore: ErroreLavatrice)
     aggiornaStato()
+    getState()
 ```
 // Descrizione: Gestisce l'esecuzione delle fasi del ciclo di lavaggio, interfacciandosi con l'Hardware Layer tramite LavatriceHardwareInterface. Riceve richieste da Scheduler/Schedule e invia comandi all'hardware. Gestisce feedback/eventi dall'hardware (fine fase, errori, ecc.).
 
@@ -132,7 +174,7 @@ interface ClockObserver is
 
 ---
 
-## Hardware Layer
+## Hardware Abstraction Layer
 
 **Interfaccia Clock**
 ```
@@ -156,7 +198,7 @@ interface ILavatriceHardware is
     arrestaCentrifuga()
     // ...altri metodi per interagire con l'hardware...
 ```
-// Descrizione: Espone i comandi per il controllo diretto dell'hardware della lavatrice. Utilizzato da CycleManager.
+// Descrizione: Espone i comandi per il controllo diretto dell'hardware della lavatrice. Utilizzato da WashingManager.
 
 ### Relazioni
 
@@ -165,15 +207,18 @@ interface ILavatriceHardware is
 - Schedule *contiene* un PianoLavaggio (associazione).
 - Clock (Hardware Layer) *notifica* gli observer (es. Scheduler) tramite onTick.
 - Scheduler *implementa* ClockObserver e aggiorna la pianificazione ad ogni tick.
-- Scheduler *collabora* con CycleManager per l'avvio dei cicli (associazione).
-- CycleManager *utilizza* LavatriceHardwareInterface per comandare l'hardware (associazione).
-- CycleManager *contiene* un PianoLavaggio (associazione).
-- CyclePlanningService *implementa* ICyclePlanningService.
-- CyclePlanningService *contiene* Scheduler per l'aggiunta di nuovi schedule.
-- CyclePlanningController *utilizza* ICyclePlanningService per la pianificazione dei cicli (dipendenza Presentation → Application Layer).
-- CyclePlanningForm *utilizza* CyclePlanningController per inviare i dati di pianificazione (dipendenza Presentation → Controller).
-- StartCycleForm *utilizza* CyclePlanningController per avviare subito il ciclo (dipendenza Presentation → Controller).
+- Scheduler *collabora* con WashingManager per l'avvio dei cicli (associazione).
+- WashingManager *utilizza* LavatriceHardwareInterface per comandare l'hardware (associazione).
+- WashingManager *contiene* un PianoLavaggio (associazione).
+- WashPlanningService *implementa* IWashPlanningService.
+- WashPlanningService *contiene* Scheduler per l'aggiunta di nuovi schedule.
+- WashPlanningController *utilizza* IWashPlanningService per la pianificazione dei cicli (dipendenza Presentation → Application Layer).
+- WashPlanningForm *utilizza* WashPlanningController per inviare i dati di pianificazione (dipendenza Presentation → Controller).
+- WashStartForm *utilizza* WashPlanningController per avviare subito il ciclo (dipendenza Presentation → Controller).
+- WashingManager *implementa* WashingControlService
+- WashControlController *utilizza* WashingControlService per il controllo ciclo (dipendenza Presentation → Application Layer).
+- WashControlMenu *utilizza* WashControlController per inviare i comandi di controllo (dipendenza Presentation → Controller).
 
 **Dependency**:
-- CyclePlanningService 'utilizza' PianoLavaggio per la creazione di nuovo Piano
-- CyclePlanningService 'utilizza' Schedule per la creazione di nuovo Schedule
+- WashPlanningService 'utilizza' PianoLavaggio per la creazione di nuovo Piano
+- WashPlanningService 'utilizza' Schedule per la creazione di nuovo Schedule
