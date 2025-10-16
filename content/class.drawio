@@ -358,7 +358,7 @@
         <mxCell id="Zm7JUVDHdO5eOqaYXh6i-97" value="- interpretaComandoVocale(string)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="Zm7JUVDHdO5eOqaYXh6i-95">
           <mxGeometry y="34" width="240" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="Zm7JUVDHdO5eOqaYXh6i-98" value="+ aggiungiSchedule(schedule)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="Zm7JUVDHdO5eOqaYXh6i-95">
+        <mxCell id="Zm7JUVDHdO5eOqaYXh6i-98" value="+ onVoiceSignal(string)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="Zm7JUVDHdO5eOqaYXh6i-95">
           <mxGeometry y="60" width="240" height="26" as="geometry" />
         </mxCell>
         <mxCell id="Zm7JUVDHdO5eOqaYXh6i-99" value="" style="endArrow=block;dashed=1;endFill=0;endSize=12;html=1;rounded=0;exitX=0.439;exitY=1.077;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitPerimeter=0;" edge="1" parent="1" source="Zm7JUVDHdO5eOqaYXh6i-98" target="Zm7JUVDHdO5eOqaYXh6i-93">
