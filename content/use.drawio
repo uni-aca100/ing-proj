@@ -219,7 +219,7 @@
           <mxGeometry x="315" y="140" width="70" height="40" as="geometry" />
         </mxCell>
         <mxCell id="OOympv97dzDQUYDObQJj-47" value="&lt;div&gt;Dissocia&lt;/div&gt;&lt;div&gt;Dis. IOT&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="570" y="90" width="70" height="40" as="geometry" />
+          <mxGeometry x="510" y="90" width="70" height="40" as="geometry" />
         </mxCell>
         <mxCell id="OOympv97dzDQUYDObQJj-50" value="Login" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="280" y="790" width="50" height="30" as="geometry" />
