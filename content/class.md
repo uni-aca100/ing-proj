@@ -177,6 +177,7 @@ class RemoteCommandManager is
     // Attributi
     network: NetworkInterface // associazione con Hardware Layer
     dispatcher: CommandDispatcher // riferimento al dispatcher Presentation Layer
+    auth: AuthenticationService // per autenticare comandi remoti
 
     // Metodi
     receiveRemoteCommand(): string
@@ -192,6 +193,7 @@ class IoTIntegrationService is
     network: NetworkInterface // associazione con Hardware Layer
     devices: List<IoTDevice> // dispositivi IoT associati
     washingManager: WashingManager // associazione per ottimizzazione
+    auth: AuthenticationService // per autenticare dispositivi IoT
 
     // Metodi
     discoverDevices(): IoTDevice
@@ -209,6 +211,38 @@ classe IoTDevice is
     nome: string
 ```
 // Descrizione: rappresenta un generico dispositivo IoT integrabile con la lavatrice (es. termostato, contatore intelligente, sensore ambiente).
+
+**Class AuthenticationService**
+```
+class AuthenticationService is
+    // Attributi
+    network: NetworkInterface // associazione con Hardware Layer
+    sessions: List<Session> // gestione multi-sessione per utenti/dispositivi
+
+    // Metodi
+    login(username: string, password: string): bool
+    logout(): void
+    verifySession(s: Session): bool
+    refreshSession(s: Session): Session
+```
+// Descrizione: Application Service che gestisce l’autenticazione locale di utenti e dispositivi. Espone operazioni di login/logout e di verifica, verifica e rinnovo della sessione locale.
+
+**Class Session**
+```
+class Session is
+    // Attributi
+    sessionId: string
+    userId: string
+    deviceId: string
+    createdAt: DateTime
+    expiresAt: DateTime
+    isActive: bool
+
+    // Metodi
+    isValid(): bool
+    invalidate(): void
+```
+// Descrizione: Rappresenta una sessione di autenticazione attiva per utente o dispositivo. Gestisce scadenza, stato della sessione autenticata. userId identificativo dell’utente autenticato a cui è associata la sessione. deviceId rappresenta l’identificativo del dispositivo che ha avviato la sessione, permette alla lavatrice di essere controllata da più dispositivi (es. app mobile).
 
 ---
 
@@ -279,6 +313,10 @@ interface NetworkInterface is
 - IoTIntegrationService *utilizza* NetworkInterface (associazione)
 - IoTIntegrationService *inoltra a* WashingManager (associazione)
 - IoTIntegrationService *gestisce* IoTDevice (aggregazione)
+- AuthenticationService *crea e gestisce* Session (composizione)
+- AuthenticationService *utilizza* NetworkInterface (associazione)
+- RemoteCommandManager *utilizza* AuthenticationService per autenticare comandi remoti (associazione)
+- IoTIntegrationService *utilizza* AuthenticationService per autenticare dispositivi IoT (associazione)
 
 **Dependency**:
 - WashPlanningService 'utilizza' PianoLavaggio per la creazione di nuovo Piano
