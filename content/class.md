@@ -68,9 +68,9 @@ class WashControlController is
 ```
 // Descrizione: Controller del Presentation Layer che espone le operazioni di controllo ciclo (pausa, riprendi, annulla, stato) verso la UI. Riceve i comandi dalle view/menu e li inoltra al WashingManager eventualmente dopo un verifica sullo stato corrente.
 
-**Classe VoiceCommandDispatcher**
+**Classe CommandDispatcher**
 ```
-class VoiceCommandDispatcher is
+class CommandDispatcher is
     // Attributi
     washPlanningController: WashPlanningController
     washControlController: WashControlController
@@ -78,7 +78,7 @@ class VoiceCommandDispatcher is
     // Metodi
     dispatch(voiceCommand: string)
 ```
-// Descrizione: Riceve l’azione vocale già interpretata dall’Application Layer (VoiceAction) e chiama il controller appropriato nel Presentation Layer (es. WashPlanningController, WashControlController) per eseguire l’operazione richiesta.
+// Descrizione: Riceve l’azione vocale/remoto già interpretata dall’Application Layer e chiama il controller appropriato nel Presentation Layer (es. WashPlanningController, WashControlController) per eseguire l’operazione richiesta.
 
 ---
 
@@ -163,13 +163,26 @@ Inotre si comporta come Application Service che espone le operazioni di controll
 ```
 class VoiceCommandInterpreter is
     // Attributi
-    dispatcher: VoiceCommandDispatcher // riferimento al dispatcher del Presentation Layer
+    dispatcher: CommandDispatcher // riferimento al dispatcher del Presentation Layer
     // Metodi
     interpretaComandoVocale(comando: string) // dispatcher.dispatch()
     onVoiceSignal(comando: string)
 ```
 // Descrizione: Interpreta il segnale vocale ricevuto dal Hardware Layer tramite VoiceSignalReceiver, analizza il segnale e lo trasforma in una commando da inoltrare al Presentation Layer tramite il dispatcher.
 
+**Class RemoteCommandManager**
+```
+class RemoteCommandManager is
+    // Attributi
+    network: NetworkInterface // associazione con Hardware Layer
+    dispatcher: CommandDispatcher // riferimento al dispatcher Presentation Layer
+
+    // Metodi
+    receiveRemoteCommand(): string
+    interpretCommand(cmd: string)
+    forwardToDispatcher(cmd: string)
+```
+// Descrizione: Classe dell'Application Layer che gestisce la comunicazione con dispositivi remoti (app mobile, cloud, IoT). Utilizza NetworkInterface per ricevere comandi, li interpreta e li inoltra al dispatcher del Presentation Layer, che li smista ai controller appropriati. Gestisce sicurezza e validazione.
 
 ---
 
@@ -205,6 +218,17 @@ interface VoiceInputDevice is
 ```
 // Descrizione: Interfaccia dell'Hardware Layer che gestisce la ricezione di segnali vocali dal microfono o modulo di riconoscimento. Quando riceve un comando vocale, lo inoltra al VoiceCommandInterpreter (dell'Application Layer).
 
+**Interfaccia NetworkInterface**
+```
+interface NetworkInterface is
+    // Metodi
+    connect(networkConfig: NetworkConfig)
+    disconnect()
+    sendData(data: NetworkPacket)
+    receiveData(): NetworkPacket
+```
+// Descrizione: Interfaccia dell'Hardware Layer che astrae la connettività di rete (Wi-Fi, Ethernet, ecc.). Permette alla lavatrice di connettersi a una rete, inviare/ricevere dati (per IoT, controllo remoto, aggiornamenti, ecc.). Implementata da moduli hardware specifici.
+
 ### Relazioni
 
 **Relazioni principali:**
@@ -222,7 +246,10 @@ interface VoiceInputDevice is
 - WashStartForm *utilizza* WashPlanningController per avviare subito il ciclo (dipendenza Presentation → Controller).
 - WashControlController *utilizza* WashingManager per il controllo ciclo (dipendenza Presentation → Application Layer).
 - WashControlMenu *utilizza* WashControlController per inviare i comandi di controllo (dipendenza Presentation → Controller).
-- VoiceCommandInterpreter *invia* il commando intepretato a VoiceCommandDispatcher (Application → Presentation Layer): il risultato dell'interpretazione viene passato al dispatcher che lo inoltra al controller appropriato.
+- VoiceCommandInterpreter *invia* il commando intepretato a CommandDispatcher (Application → Presentation Layer): il risultato dell'interpretazione viene passato al dispatcher che lo inoltra al controller appropriato.
+- RemoteCommandManager *utilizza* NetworkInterface ((associazione))
+- RemoteCommandManager *inotra* comandi a CommandDispatcher (associazione)
+- CommandDispatcher *inotra* a WashControlController, WashPlanningController, etc. (associazione)
 
 **Dependency**:
 - WashPlanningService 'utilizza' PianoLavaggio per la creazione di nuovo Piano
