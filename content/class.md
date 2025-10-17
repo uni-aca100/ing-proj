@@ -155,6 +155,7 @@ class WashingManager is
     gestisciErrore(errore: ErroreLavatrice)
     aggiornaStato()
     getState()
+    optimizeCycle(iotData: string)
 ```
 // Descrizione: Gestisce l'esecuzione delle fasi del ciclo di lavaggio, interfacciandosi con l'Hardware Layer tramite LavatriceHardwareInterface. Riceve richieste da Scheduler/Schedule e invia comandi all'hardware. Gestisce feedback/eventi dall'hardware (fine fase, errori, ecc.).
 Inotre si comporta come Application Service che espone le operazioni di controllo del ciclo di lavaggio di lavaggio in corso (pausa, riprendi, annulla) verso il Presentation Layer. Riceve le richieste dal livello superiore per il controllo del lavaggio in cosrso.
@@ -183,6 +184,31 @@ class RemoteCommandManager is
     forwardToDispatcher(cmd: string)
 ```
 // Descrizione: Classe dell'Application Layer che gestisce la comunicazione con dispositivi remoti (app mobile, cloud, IoT). Utilizza NetworkInterface per ricevere comandi, li interpreta e li inoltra al dispatcher del Presentation Layer, che li smista ai controller appropriati. Gestisce sicurezza e validazione.
+
+**Class IoTIntegrationService**
+```
+class IoTIntegrationService is
+    // Attributi
+    network: NetworkInterface // associazione con Hardware Layer
+    devices: List<IoTDevice> // dispositivi IoT associati
+    washingManager: WashingManager // associazione per ottimizzazione
+
+    // Metodi
+    discoverDevices(): IoTDevice
+    associateDevice(device: IoTDevice)
+    receiveData(device: IoTDevice): string
+    processIoTData(iotData: string)
+```
+// Descrizione: Classe dell'Application Layer che gestisce l'integrazione e la comunicazione con dispositivi IoT esterni (es. termostati, contatore intelligente). Utilizza NetworkInterface per la comunicazione di rete, mantiene la lista dei dispositivi associati, riceve dati e invia comandi. Il metodo processIoTData interpreta i dati ricevuti dai dispositivi IoT e invoca washingManager.optimizeCycle(iotData) per ottimizzare il ciclo di lavaggio in base alle informazioni raccolte.
+
+**classe IoTDevice**
+```
+classe IoTDevice is
+    id: string // UUID o MAC
+    ipAddress: string
+    nome: string
+```
+// Descrizione: rappresenta un generico dispositivo IoT integrabile con la lavatrice (es. termostato, contatore intelligente, sensore ambiente).
 
 ---
 
@@ -250,6 +276,9 @@ interface NetworkInterface is
 - RemoteCommandManager *utilizza* NetworkInterface ((associazione))
 - RemoteCommandManager *inotra* comandi a CommandDispatcher (associazione)
 - CommandDispatcher *inotra* a WashControlController, WashPlanningController, etc. (associazione)
+- IoTIntegrationService *utilizza* NetworkInterface (associazione)
+- IoTIntegrationService *inoltra a* WashingManager (associazione)
+- IoTIntegrationService *gestisce* IoTDevice (aggregazione)
 
 **Dependency**:
 - WashPlanningService 'utilizza' PianoLavaggio per la creazione di nuovo Piano
