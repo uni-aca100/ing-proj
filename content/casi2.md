@@ -384,3 +384,15 @@ L’utente autenticato può terminare volontariamente la propria sessione, disco
 - L’utente non può più accedere alle funzionalità protette fino a nuovo login.
 
 ---
+
+**attori**:
+Utente
+  ^
+  |
+Remote Control (App Mobile)
+
+Sistema
+
+Lavatrice
+
+Dispositivo IoT Esterno
