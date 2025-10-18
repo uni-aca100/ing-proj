@@ -15,12 +15,11 @@ Il sistema controlla e coordina l’esecuzione del ciclo di lavaggio, comandando
 5. La lavatrice esegue il risciacquo.
 6. La lavatrice esegue la centrifuga.
 7. La lavatrice scarica l’acqua residua.
-8. Se durante il ciclo si verifica un errore tecnico (es. guasto, blocco, errore sensore), il sistema mette in pausa il ciclo, richiama il caso d’uso "Invio Notifica" per notificare l'errore e suggerisce eventuali azioni correttive (es. reset lavatrice).
-9. Al termine del ciclo, il sistema richiama il caso d’uso "Invio Notifica" per notificare il completamento del ciclo.
+8. Se durante il ciclo si verifica un errore tecnico (es. guasto, blocco, errore sensore), il sistema mette in pausa il ciclo, notificando l'utente delll'errore e suggerisce eventuali azioni correttive (es. reset lavatrice).
+9. Al termine del ciclo, il sistema notifica tramite l’interfaccia prevista (app, display, ecc.) del completamento del ciclo.
 
 **Inclusioni:**  
 - [Include: Rilevamento Carico] Prima di avviare il ciclo, il sistema esegue il rilevamento automatico del carico.
-- [Include: Invio Notifica] Al termine del ciclo, il sistema invia una notifica di completamento, o in caso di errore tecnico.
 
 **Postcondizioni:**  
 - Il ciclo di lavaggio è completato.
@@ -77,34 +76,14 @@ L’utente o il sistema può richiedere l’annullamento del ciclo di lavaggio d
 **Estensioni:**
 - [Estende: Pausa ciclo ] L’utente o il sistema può inviare il comando di annullamento.
 
-**Inclusioni:**  
-- [Include: Invio Notifica] Il sistema invia una notifica di annulamento.
-
 **Flusso principale degli eventi:**  
 1. L’utente o il sistema invia il comando di annullamento.
 2. La lavatrice interrompe definitivamente il ciclo di lavaggio e scarica l’acqua residua, se necessario.
-3. La lavatrice richiama il caso d’uso "Invio Notifica" per notificare l’annullamento del ciclo.
+3. La lavatrice notifica l'utente dell’annullamento del ciclo tramite l’interfaccia prevista (app, display, ecc.).
 
 **Postcondizioni:**  
 - Il ciclo di lavaggio è terminato senza essere completato.
 - Il sistema riceve la notifica di annullamento.
-
----
-
-**Caso d’uso:** Invio Notifica  
-**Attore principale:** Lavatrice o Sistema  
-**Descrizione:**  
-La lavatrice o il sistema invia una notifica per comunicare eventi rilevanti (completamento ciclo, errore tecnico, annullamento, ecc.). La notifica è inoltrata all’utente tramite i canali previsti.
-**Condizioni di entrata:**  
-- Il caso d’uso viene incluso da altri casi d’uso che necessitano di inviare una notifica.
-
-**Flusso principale degli eventi:**  
-1. La lavatrice o il sistema genera il messaggio di notifica in base all’evento.
-2. Il sistema invia la notifica all’utente tramite l’interfaccia prevista (app, display, ecc.).
-3. L’utente riceve la comunicazione relativa all’evento.
-
-**Postcondizioni:**  
-- Il sistema e/o l’utente sono informati dell’evento.
 
 ---
 
@@ -165,10 +144,7 @@ L’utente può avviare manualmente una procedura di diagnostica, oppure il sist
 2. Il sistema invia i comandi di test ai vari componenti della lavatrice (motore, sensori, valvole, ecc.).
 3. La lavatrice esegue i test richiesti e restituisce i risultati al sistema.
 4. Il sistema analizza i risultati e determina se sono presenti anomalie o malfunzionamenti.
-5. Il sistema richiama il caso d’uso "Invio Notifica" per comunicare l’esito della diagnostica all’utente.
-
-**Inclusioni:**  
-- [Include: Invio Notifica] Il sistema invia una notifica con il report della diagnostica.
+5. Il sistema richiama notifica tramite l’interfaccia prevista (app, display, ecc.) l’esito della diagnostica all’utente.
 
 **Postcondizioni:**  
 - L’utente riceve un report sull’esito della diagnostica.
@@ -212,10 +188,7 @@ L’utente, tramite l’interfaccia, o il sistema in modo automatico, può avvia
 2. Il sistema invia il comando di reset alla lavatrice.
 3. La lavatrice interrompe tutte le operazioni in corso.
 4. La lavatrice scarica eventuale acqua residua e azzera gli errori.
-5. Il sistema richiama il caso d’uso "Invio Notifica" per comunicare l’esito del reset all’utente.
-
-**Inclusioni:**  
-- [Include: Invio Notifica] Il sistema invia una notifica all’utente sull’esito del reset.
+5. Il sistema notifica l'utente per comunicare l’esito del reset.
 
 **Postcondizioni:**  
 - La lavatrice è pronta per un nuovo ciclo.
@@ -236,10 +209,7 @@ Il sistema si integra con altri dispositivi IoT presenti nell’abitazione (come
 1. Il sistema rileva la presenza di dispositivi IoT compatibili nella rete domestica.
 2. Il sistema riceve dati dai dispositivi IoT (es. temperatura, dispendio energetico).
 3. Il sistema elabora le informazioni e valuta la strategia ottimale per l’esecuzione del ciclo di lavaggio.
-5. Il sistema richiama il caso d’uso "Invio Notifica" per informare l’utente delle scelte effettuate o di eventuali ottimizzazioni.
-
-**Inclusioni:**  
-- [Include: Invio Notifica] Il sistema invia una notifica all’utente sulle ottimizzazioni.
+5. Il sistema notifica l'utente per informarlo delle scelte effettuate o di eventuali ottimizzazioni.
 
 **Postcondizioni:**  
 - Il ciclo di lavaggio è ottimizzato in base ai dati dei dispositivi IoT.
@@ -259,13 +229,10 @@ L’utente può annullare in qualsiasi momento l’ottimizzazione dei consumi en
 **Flusso principale degli eventi:**  
 1. L’utente seleziona l’opzione per annullare l’ottimizzazione IoT tramite l’interfaccia.
 2. Il sistema interrompe la strategia di ottimizzazione e ripristina le modalità standard.
-3. Il sistema richiama il caso d’uso "Invio Notifica" per informare l’utente dell’avvenuto annullamento.
+3. Il sistema notifica l'utente per informarlo dell’avvenuto annullamento.
 
 **Estensioni:**  
 - [Estende: Integrazione IoT ottimizzazione Consumi] L’utente può annullare l’ottimizzazione in qualsiasi momento.
-
-**Inclusioni:**  
-- [Include: Invio Notifica] Il sistema invia una notifica all’utente sull’annullamento dell’ottimizzazione.
 
 **Postcondizioni:**  
 - L’ottimizzazione IoT è disattivata e il ciclo di lavaggio segue le modalità standard.
@@ -288,10 +255,7 @@ L’utente può associare un nuovo dispositivo IoT compatibile (es. termostato, 
 2. Il sistema esegue la scansione della rete per rilevare dispositivi IoT compatibili.  
 3. L’utente seleziona il dispositivo da associare dall’elenco proposto.  
 4. Il sistema avvia la procedura di associazione e configura il dispositivo per l’integrazione con la lavatrice.  
-5. Il sistema richiama il caso d’uso "Invio Notifica" per confermare l’avvenuta associazione o segnalare eventuali errori.
-
-**Inclusioni:**  
-- [Include: Invio Notifica] Il sistema invia una notifica all’utente sull’esito dell’associazione.
+5. Il sistema notifica l'utente per confermare l’avvenuta associazione o segnalare eventuali errori.
 
 **Postcondizioni:**  
 - Il nuovo dispositivo IoT è associato e pronto per l’integrazione con la lavatrice.  
@@ -315,10 +279,7 @@ L’utente può dissociare un dispositivo IoT precedentemente associato alla lav
 3. L’utente seleziona il dispositivo da dissociare.  
 4. Il sistema avvia la procedura di dissociazione e rimuove la configurazione relativa al dispositivo.  
 5. Il sistema comunica al dispositivo IoT la richiesta di disconnessione, se supportato.  
-6. Il sistema richiama il caso d’uso "Invio Notifica" per confermare l’avvenuta dissociazione o segnalare eventuali errori.
-
-**Inclusioni:**  
-- [Include: Invio Notifica] Il sistema invia una notifica all’utente sull’esito della dissociazione.
+6. Il sistema notifica l'utente per confermare l’avvenuta dissociazione o segnalare eventuali errori.
 
 **Postcondizioni:**  
 - Il dispositivo IoT selezionato è stato dissociato e non comunica più con la lavatrice.  
@@ -401,5 +362,25 @@ Se l’utente non è autenticato e tenta di eseguire il reset della lavatrice, i
 
 **Postcondizioni:**  
 - L’utente è autenticato e può completare il reset della lavatrice.
+
+---
+
+**Caso d’uso:** Logout
+**Attore principale:** Utente
+**Descrizione:**  
+L’utente autenticato può terminare volontariamente la propria sessione, disconnettendosi dal sistema della lavatrice intelligente. Il logout invalida la sessione attiva, impedendo ulteriori operazioni protette fino a nuovo login.
+
+**Precondizioni:**  
+- L’utente è autenticato e dispone di una sessione attiva.
+
+**Flusso principale degli eventi:**  
+1. L’utente seleziona l’opzione di logout tramite l’interfaccia (display o app).
+2. Il sistema riceve la richiesta di logout.
+3. Il sistema invalida la sessione attiva dell’utente (rimuove o marca come inattiva la sessione).
+4. Il sistema conferma l’avvenuto logout all’utente.
+
+**Postcondizioni:**  
+- La sessione dell’utente è stata invalidata.
+- L’utente non può più accedere alle funzionalità protette fino a nuovo login.
 
 ---
