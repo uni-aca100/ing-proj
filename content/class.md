@@ -12,6 +12,7 @@ class WashPlanningForm is
 
     // Metodi
     submit()  // chiama controller.onPianificaLavaggio(parametriPiano, now)
+    render()
 ```
 // Descrizione: Form/view del Presentation Layer per la pianificazione di un ciclo (rappresenta la UI per la raccolta dei dati di pianificazione dal’utente). Raccoglie i dati dall’utente e, al submit, invoca il metodo onPianificaLavaggio del controller passando i parametri inseriti.
 
@@ -25,6 +26,7 @@ class WashStartForm is
 
     // Metodi
     submit() // chiama controller.onPianificaLavaggio(parametriPiano, now)
+    render()
 ```
 // Descrizione: Form/view specializzato per l'avvio immediato del lavaggio (rappresenta la UI per la raccolta dei dati del piano di lavaggio dal’utente). Al submit invia i parametri e la data/ora corrente al controller tramite onPianificaLavaggio.
 
@@ -46,8 +48,7 @@ class WashControlMenu is
     controller: WashControlController // riferimento al controller
 
     // Metodi
-    buttonsRendering() // alternativa rappresentazione separata
-    stateRendering()
+    render()
     inviaComandoPausa() // chiama eventualmente controller.onPausaLavaggio()
     inviaComandoRiprendi() // chiama eventualmente controller.onriPrendiLavaggio()
     inviaComandoAnnulla() // chiama eventualmente controller.onPausaLavaggio()
@@ -79,6 +80,34 @@ class CommandDispatcher is
     dispatch(voiceCommand: string)
 ```
 // Descrizione: Riceve l’azione vocale/remoto già interpretata dall’Application Layer e chiama il controller appropriato nel Presentation Layer (es. WashPlanningController, WashControlController) per eseguire l’operazione richiesta.
+
+**Classe LoginForm**
+```
+class LoginForm is
+    // Attributi
+    username: string
+    password: string
+    controller: AuthController // riferimento al controller
+
+    // Metodi
+    submitLogin() // chiama controller.onLogin(username, password)
+    submitLogout() // chiama controller.onLogout()
+    render()
+```
+// Descrizione: Form/view del Presentation Layer per la gestione dell’autenticazione. Raccoglie le credenziali dall’utente e, al submit, invoca i metodi di login/logout del controller AuthController. Gestisce la visualizzazione di messaggi di errore o conferma.
+
+**Classe AuthController**
+```
+class AuthController is
+    // Attributi
+    authService: AuthenticationService // dipendenza verso Application Service
+
+    // Metodi
+    onLogin(username: string, password: string): bool // chiama authService.login()
+    onLogout(): bool // chiama authService.logout()
+```
+// Descrizione: Controller del Presentation Layer dedicato alla gestione delle operazioni di login e logout. Riceve i dati dalla view di login/logout, effettua una verifica dei campi e li inoltra ad AuthenticationService.
+
 
 ---
 
@@ -320,6 +349,8 @@ interface NetworkInterface is
 - AuthenticationService *utilizza* NetworkInterface (associazione)
 - RemoteCommandManager *utilizza* AuthenticationService per autenticare comandi remoti (associazione)
 - IoTIntegrationService *utilizza* AuthenticationService per autenticare dispositivi IoT (associazione)
+- AuthController (associato a) AuthenticationService
+- LoginForm (associato a) AuthController
 
 **Dependency**:
 - WashPlanningService 'utilizza' PianoLavaggio per la creazione di nuovo Piano
