@@ -222,10 +222,13 @@ class AuthenticationService is
     // Metodi
     login(username: string, password: string): bool
     logout(): void
-    verifySession(s: Session): bool
-    refreshSession(s: Session): Session
+    verifySession(idSession: string): bool
+    refreshSession(idSession: string): Session
 ```
 // Descrizione: Application Service che gestisce l’autenticazione locale di utenti e dispositivi. Espone operazioni di login/logout e di verifica, verifica e rinnovo della sessione locale.
+// Il sistema attuale è progettato per autenticazione locale e gestione multi-sessione (lista di Session), per un sistemi chiusi.
+La lavatrice mantiene lo stato delle sessioni attive (Session), può invalidare una sessione, gestire login/logout in modo diretto.
+I dispositivi IoT e remoti inviano la sessione (idSession token della sezione), che viene validata localmente.
 
 **Class Session**
 ```
