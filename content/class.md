@@ -92,6 +92,7 @@ class LoginForm is
     // Metodi
     submitLogin() // chiama controller.onLogin(username, password)
     submitLogout() // chiama controller.onLogout()
+    recoverPassword(username: string)
     render()
 ```
 // Descrizione: Form/view del Presentation Layer per la gestione dell’autenticazione. Raccoglie le credenziali dall’utente e, al submit, invoca i metodi di login/logout del controller AuthController. Gestisce la visualizzazione di messaggi di errore o conferma.
@@ -105,6 +106,7 @@ class AuthController is
     // Metodi
     onLogin(username: string, password: string): bool // chiama authService.login()
     onLogout(): bool // chiama authService.logout()
+    OnRecoverPassword(username: string)
 ```
 // Descrizione: Controller del Presentation Layer dedicato alla gestione delle operazioni di login e logout. Riceve i dati dalla view di login/logout, effettua una verifica dei campi e li inoltra ad AuthenticationService.
 
@@ -253,6 +255,8 @@ class AuthenticationService is
     logout(): void
     verifySession(idSession: string): bool
     refreshSession(idSession: string): Session
+    recoverPassword(username: string).
+    isDeviceAuthenticated(deviceId: string): bool
 ```
 // Descrizione: Application Service che gestisce l’autenticazione locale di utenti e dispositivi. Espone operazioni di login/logout e di verifica, verifica e rinnovo della sessione locale.
 // Il sistema attuale è progettato per autenticazione locale e gestione multi-sessione (lista di Session), per un sistemi chiusi.
