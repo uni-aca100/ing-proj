@@ -110,6 +110,35 @@ class AuthController is
 ```
 // Descrizione: Controller del Presentation Layer dedicato alla gestione delle operazioni di login e logout. Riceve i dati dalla view di login/logout, effettua una verifica dei campi e li inoltra ad AuthenticationService.
 
+**Classe IoTDeviceMenu**
+```
+class IoTDeviceForm is
+    // Attributi
+    devices: List<IoTDevice> // elenco dispositivi trovati
+    selected: IoTDevice // dispositivo selezionato
+    controller: IoTDeviceController // riferimento al controller
+
+    // Metodi
+    scanDevices() // chiama controller.onScanDevices() e ottiene i dispositivi disponibili
+    selectDevice(device: IoTDevice) // seleziona dispositivo
+    submitAssociate() // chiama controller.onAssociateDevice(selectedDevice)
+    submitDissociate() // chiama controller.onDissociateDevice(selectedDevice)
+    render()
+```
+// Descrizione: menu del Presentation Layer per la gestione dei dispositivi IoT. Permette all’utente di avviare la scansione, selezionare un dispositivo, associarlo/dissociarlo e visualizzare lo stato.
+
+**Classe IoTDeviceController**
+```
+class IoTDeviceController is
+    // Attributi
+    iotService: IoTIntegrationService // dipendenza verso Application Service
+
+    // Metodi
+    onScanDevices(): List<IoTDevice> // chiama iotService.discoverDevices()
+    onAssociateDevice(device: IoTDevice): bool // chiama iotService.associateDevice(device)
+    onDissociateDevice(device: IoTDevice): bool // chiama iotService.dissociateDevice(device)
+```
+// Descrizione: Controller del Presentation Layer che gestisce le operazioni di scansione, associazione e dissociazione dispositivi IoT. Riceve le azioni dal form/menu e le inoltra al servizio di integrazione IoT.
 
 ---
 
@@ -227,8 +256,9 @@ class IoTIntegrationService is
     auth: AuthenticationService // per autenticare dispositivi IoT
 
     // Metodi
-    discoverDevices(): IoTDevice
-    associateDevice(device: IoTDevice)
+    discoverDevices(): List<IoTDevice>
+    associateDevice(device: IoTDevice): bool
+    dissociateDevice(device: IoTDevice): bool
     receiveData(device: IoTDevice): string
     processIoTData(iotData: string)
 ```
@@ -355,6 +385,8 @@ interface NetworkInterface is
 - IoTIntegrationService *utilizza* AuthenticationService per autenticare dispositivi IoT (associazione)
 - AuthController (associato a) AuthenticationService
 - LoginForm (associato a) AuthController
+- IoTDeviceMenu (associato a) IoTDeviceController 
+- IoTDeviceController (associato a) IoTIntegrationService
 
 **Dependency**:
 - WashPlanningService 'utilizza' PianoLavaggio per la creazione di nuovo Piano
