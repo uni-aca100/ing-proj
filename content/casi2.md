@@ -385,6 +385,45 @@ L’utente autenticato può terminare volontariamente la propria sessione, disco
 
 ---
 
+**Caso d’uso:** Attiva Comandi Vocali  
+**Attore principale:** Utente  
+**Attore secondario:** Sistema  
+**Descrizione:**  
+L’utente può attivare la funzionalità di controllo vocale della lavatrice tramite l’interfaccia (app o display). Una volta attivati, i comandi vocali permettono di impartire istruzioni alla lavatrice usando la voce.
+
+**Precondizioni:**  
+- L’utente è autenticato nel sistema.
+- La lavatrice supporta la funzionalità di comandi vocali.
+
+**Flusso principale degli eventi:**  
+1. L’utente seleziona l’opzione per attivare i comandi vocali tramite l’interfaccia.
+2. Il sistema abilita il modulo di riconoscimento vocale.
+3. Il sistema notifica l’utente dell’avvenuta attivazione.
+
+**Postcondizioni:**  
+- I comandi vocali sono attivi e pronti per essere utilizzati.
+
+---
+
+**Caso d’uso:** Disattiva Comandi Vocali  
+**Attore principale:** Utente  
+**Attore secondario:** Sistema  
+**Descrizione:**  
+L’utente può disattivare la funzionalità di controllo vocale della lavatrice tramite l’interfaccia (app o display). Una volta disattivati, i comandi vocali non sono più accettati dal sistema.
+
+**Precondizioni:**  
+- I comandi vocali sono attivi.
+
+**Flusso principale degli eventi:**  
+1. L’utente seleziona l’opzione per disattivare i comandi vocali tramite l’interfaccia.
+2. Il sistema disabilita il modulo di riconoscimento vocale.
+3. Il sistema notifica l’utente dell’avvenuta disattivazione.
+
+**Postcondizioni:**  
+- I comandi vocali sono disattivati e non possono essere utilizzati fino a nuova attivazione.
+
+---
+
 **attori**:
 Utente
   ^

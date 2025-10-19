@@ -77,9 +77,9 @@ class CommandDispatcher is
     washControlController: WashControlController
 
     // Metodi
-    dispatch(voiceCommand: string)
+    dispatch(command: string, sessionId: string)
 ```
-// Descrizione: Riceve l’azione vocale/remoto già interpretata dall’Application Layer e chiama il controller appropriato nel Presentation Layer (es. WashPlanningController, WashControlController) per eseguire l’operazione richiesta.
+// Descrizione: Riceve l’azione vocale/remoto già interpretata dall’Application Layer e chiama il controller appropriato nel Presentation Layer (es. WashPlanningController, WashControlController) per eseguire l’operazione richiesta, sessionId è necessaria per i commandi che richiedono autenticazione (per i vocali è di default system.sessionId).
 
 **Classe LoginForm**
 ```
@@ -139,6 +139,32 @@ class IoTDeviceController is
     onDissociateDevice(device: IoTDevice): bool // chiama iotService.dissociateDevice(device)
 ```
 // Descrizione: Controller del Presentation Layer che gestisce le operazioni di scansione, associazione e dissociazione dispositivi IoT. Riceve le azioni dal form/menu e le inoltra al servizio di integrazione IoT.
+
+**Classe VoiceCommandMenu**
+```
+class VoiceCommandMenu is
+    // Attributi
+    controller: VoiceCommandController // riferimento al controller
+
+    // Metodi
+    activateVoiceCommands() // chiama controller.onActivateVoiceCommands(system.sessionId)
+    disableVoiceCommands() // chiama controller.onDisableVoiceCommands()
+    render()
+```
+// Descrizione: Menu/view del Presentation Layer che offre all’utente la possibilità di attivare o disattivare i comandi vocali tramite la UI. Interagisce con VoiceCommandController per inoltrare le richieste e visualizzare lo stato corrente.
+
+**Classe VoiceCommandController**
+```
+class VoiceCommandController is
+    // Attributi
+    voiceInterpreter: VoiceCommandInterpreter // dipendenza verso Application Layer
+
+    // Metodi
+    onActivateVoiceCommands(sessionId: string) // chiama voiceInterpreter.activateVoiceCommands(sessionId)
+    onDisableVoiceCommands() // chiama voiceInterpreter.disableVoiceCommands()
+```
+// Descrizione: Controller del Presentation Layer che riceve le richieste di attivazione/disattivazione dei comandi vocali dalla UI, effettua eventuali validazioni e invoca i metodi appropriati su VoiceCommandInterpreter.
+
 
 ---
 
@@ -225,11 +251,20 @@ Inotre si comporta come Application Service che espone le operazioni di controll
 class VoiceCommandInterpreter is
     // Attributi
     dispatcher: CommandDispatcher // riferimento al dispatcher del Presentation Layer
+    authService: AuthenticationService // dipendenza per verifica autenticazione
+
     // Metodi
     interpretaComandoVocale(comando: string) // dispatcher.dispatch()
     onVoiceSignal(comando: string)
+    disableVoiceCommands()
+    activateVoiceCommands(sessionId: string)
+            // verifica autenticazione tramite authService
+        if authService.verifySession(sessionId) then
+            // attiva comandi vocali
+        else
+            // operazione negata: utente/dispositivo non autenticato
 ```
-// Descrizione: Interpreta il segnale vocale ricevuto dal Hardware Layer tramite VoiceSignalReceiver, analizza il segnale e lo trasforma in una commando da inoltrare al Presentation Layer tramite il dispatcher.
+// Descrizione: Interpreta il segnale vocale ricevuto dal Hardware Layer tramite VoiceSignalReceiver, analizza il segnale e lo trasforma in una commando da inoltrare al Presentation Layer tramite il dispatcher. Ora verifica l'autenticazione prima di attivare i comandi vocali.
 
 **Class RemoteCommandManager**
 ```
@@ -387,6 +422,9 @@ interface NetworkInterface is
 - LoginForm (associato a) AuthController
 - IoTDeviceMenu (associato a) IoTDeviceController 
 - IoTDeviceController (associato a) IoTIntegrationService
+- VoiceCommandInterpreter (associato a) AuthenticationService
+- VoiceCommandController (associato a) voiceInterpreter
+- VoiceCommandMenu (associato a) VoiceCommandController
 
 **Dependency**:
 - WashPlanningService 'utilizza' PianoLavaggio per la creazione di nuovo Piano
