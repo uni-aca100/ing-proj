@@ -182,6 +182,7 @@ L’utente, tramite l’interfaccia, o il sistema in modo automatico, può avvia
 
 **Precondizioni:**  
 - La lavatrice è accesa e collegata al sistema.
+- L’utente è autenticato nel sistema.
 
 **Flusso principale degli eventi:**  
 1. L’utente seleziona l’opzione di reset tramite l’interfaccia, oppure il sistema avvia il reset automaticamente (ad esempio dopo un errore tecnico persistente).
@@ -335,33 +336,6 @@ L’utente che ha dimenticato la password può avviare la procedura di recupero,
 **Postcondizioni:**  
 - La password dell’utente è stata reimpostata.
 - L’utente può accedere nuovamente al sistema.
-
----
-
-**Caso d’uso:** Utente non Autenticato
-**Attore principale:** Utente  
-**Descrizione:**  
-Se l’utente non è autenticato e tenta di eseguire il reset della lavatrice, il sistema attiva la procedura di login specifica per questa operazione protetta.
-
-**Precondizioni:**  
-- L’utente non è autenticato.
-- L’utente ha richiesto il reset della lavatrice.
-
-**Flusso principale degli eventi:**  
-1. L’utente seleziona l’opzione di reset.
-2. Il sistema rileva che l’utente non è autenticato.
-3. Il sistema Richiama il caso d’uso "Login" per autenticare l’utente.
-4. Se l’autenticazione ha successo, il sistema consente l’operazione di reset.
-5. Se errate, il sistema mostra un messaggio di errore e consente un nuovo tentativo.
-
-**Inclusioni:**  
-- [Include: Login] Il caso d’uso include il flusso di autenticazione standard.
-
-**Estensioni:**  
-- [Estende: Reset Lavatrice] Il caso d’uso viene attivato solo se l’utente non è autenticato.
-
-**Postcondizioni:**  
-- L’utente è autenticato e può completare il reset della lavatrice.
 
 ---
 
