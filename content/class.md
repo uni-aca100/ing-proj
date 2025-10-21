@@ -165,6 +165,32 @@ class VoiceCommandController is
 ```
 // Descrizione: Controller del Presentation Layer che riceve le richieste di attivazione/disattivazione dei comandi vocali dalla UI, effettua eventuali validazioni e invoca i metodi appropriati su VoiceCommandInterpreter.
 
+**Classe ResetMenu**
+```
+class ResetMenu is
+    // Attributi
+    controller: ResetController // riferimento al controller
+
+    // Metodi
+    render()
+    reset() // chiama controller.onResetLavatrice(sessionId)
+    checkMachineStatus() // controller.onCheckMachineStatus()
+    renderResetResult(esito: boolean, dettagli: string) // incovato da reset() al termine del reset 
+```
+// Descrizione: View/menu del Presentation Layer che offre all’utente la possibilità di avviare la procedura di reset, visualizza lo stato e l’esito dell’operazione.
+
+**Classe ResetController**
+```
+class ResetController is
+    // Attributi
+    resetHandler: ResetHandler // dipendenza verso Application Layer
+
+    // Metodi
+    onReset(sessionId: string) // chiama resetHandler.resetLavatrice(sessionId)
+    onCheckMachineStatus() // chiama resetHandler.verificaStatoLavatrice()
+```
+// Descrizione: Controller del Presentation Layer che riceve la richiesta di reset dalla view/menu, effettua eventuali validazioni (es. sessione utente), inoltra la richiesta al ResetHandler.
+
 
 ---
 
@@ -345,6 +371,23 @@ class Session is
 ```
 // Descrizione: Rappresenta una sessione di autenticazione attiva per utente o dispositivo. Gestisce scadenza, stato della sessione autenticata. userId identificativo dell’utente autenticato a cui è associata la sessione. deviceId rappresenta l’identificativo del dispositivo che ha avviato la sessione, permette alla lavatrice di essere controllata da più dispositivi (es. app mobile).
 
+**Classe Gestore reset lavatrice**
+```
+class ResetHandler is
+    // Attributi
+    hardware: LavatriceHardwareInterface // dipendenza verso Hardware Layer
+    authService: AuthenticationService // dipendenza per verifica autenticazione
+
+    // Metodi
+    resetLavatrice(sessionId: String): boolean // verifica autenticazione tramite authService.verifySessio (sessionId) prima di eseguire il reset
+    checkStatusMachine(): string // controlla lo stato attuale
+    notificaEsitoReset() // notifica l'esito all'utente/sistema 
+```
+// Descrizione: Application Service dedicato alla gestione della logica di reset della lavatrice. Riceve richieste dal controller/menu, verifica l'autenticazione tramite AuthenticationService, coordina le operazioni di reset (interruzione operazioni, scarico acqua, azzeramento errori), comunica con l’interfaccia hardware e notifica l’esito.
+
+**TODO Classe communicazione notiche**
+TDOD
+
 ---
 
 ## Hardware Abstraction Layer
@@ -425,6 +468,10 @@ interface NetworkInterface is
 - VoiceCommandInterpreter (associato a) AuthenticationService
 - VoiceCommandController (associato a) voiceInterpreter
 - VoiceCommandMenu (associato a) VoiceCommandController
+- ResetMenu (associato a) ResetController
+- ResetController (associato a) ResetHandler
+- ResetHandler (associato a) LavatriceHardwareInterface
+- ResetHandler (associato a) AuthenticationService
 
 **Dependency**:
 - WashPlanningService 'utilizza' PianoLavaggio per la creazione di nuovo Piano
