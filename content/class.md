@@ -75,6 +75,7 @@ class CommandDispatcher is
     // Attributi
     washPlanningController: WashPlanningController
     washControlController: WashControlController
+    ...
 
     // Metodi
     dispatch(command: string, sessionId: string)
@@ -191,6 +192,29 @@ class ResetController is
 ```
 // Descrizione: Controller del Presentation Layer che riceve la richiesta di reset dalla view/menu, effettua eventuali validazioni (es. sessione utente), inoltra la richiesta al ResetHandler.
 
+**Classe DiagnosticMenu**
+```
+class DiagnosticMenu is
+    // Attributi
+    controller: DiagnosticController // riferimento al controller
+
+    // Metodi
+    render()
+    startDiagnostica() // chiama controller.onAvviaDiagnostica(sessionId)
+    renderReport(report: DiagnosticReport) // chimata al termine di avviaDiagnostica()
+```
+// Descrizione: View/menu del Presentation Layer che permette all’utente di avviare la diagnostica e visualizzare i risultati.
+
+**Classe DiagnosticController**
+```
+class DiagnosticController is
+    // Attributi
+    diagnosticHandler: DiagnosticHandler // dipendenza verso Application Layer
+
+    // Metodi
+    onStartDiagnostica(sessionId: string): DiagnosticReport // chiama diagnosticHandler.execute(sessionId)
+```
+// Descrizione: Controller del Presentation Layer che riceve le richieste dalla view/menu, effettua eventuali validazioni e inoltra la richiesta all’application layer.
 
 ---
 
@@ -379,14 +403,32 @@ class ResetHandler is
     authService: AuthenticationService // dipendenza per verifica autenticazione
 
     // Metodi
-    resetLavatrice(sessionId: String): boolean // verifica autenticazione tramite authService.verifySessio (sessionId) prima di eseguire il reset
+    resetLavatrice(sessionId: String)// verifica autenticazione tramite authService.verifySessio (sessionId) prima di eseguire il reset
     checkStatusMachine(): string // controlla lo stato attuale
     notificaEsitoReset() // notifica l'esito all'utente/sistema 
 ```
 // Descrizione: Application Service dedicato alla gestione della logica di reset della lavatrice. Riceve richieste dal controller/menu, verifica l'autenticazione tramite AuthenticationService, coordina le operazioni di reset (interruzione operazioni, scarico acqua, azzeramento errori), comunica con l’interfaccia hardware e notifica l’esito.
 
-**TODO Classe communicazione notiche**
-TDOD
+**Classe DiagnosticHandler**
+```
+class DiagnosticHandler is
+    // Attributi
+    hardware: LavatriceHardwareInterface // dipendenza verso Hardware Layer
+    authService: AuthenticationService // dipendenza per verifica autenticazione
+
+    // Metodi
+    execute(sessionId: string): DiagnosticReport // verifica autenticazione, interroga hardware, costruisce report
+```
+// Descrizione: Application Service che implementa la logica di diagnostica, interagisce con l’hardware, raccoglie i risultati e li restituisce al controller/menu.
+
+**Classe DiagnosticReport**
+```
+class DiagnosticReport is
+    // Attributi
+    esito: boolean
+    errori: List<ErroreLavatrice>
+```
+// Descrizione: Oggetto che rappresenta il risultato della diagnostica (esito, eventuali errori rilevati).
 
 ---
 
@@ -472,6 +514,10 @@ interface NetworkInterface is
 - ResetController (associato a) ResetHandler
 - ResetHandler (associato a) LavatriceHardwareInterface
 - ResetHandler (associato a) AuthenticationService
+- DiagnosticController (associato a) DiagnosticHandler
+- DiagnosticMenu (associato a) DiagnosticController
+- DiagnosticController (associato a) AuthenticationService
+- DiagnosticController (associato a) LavatriceHardwareInterface
 
 **Dependency**:
 - WashPlanningService 'utilizza' PianoLavaggio per la creazione di nuovo Piano
