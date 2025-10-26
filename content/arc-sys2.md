@@ -26,6 +26,7 @@ Il Presentation Layer è suddiviso in tre sotto-componenti principali:
 
 - **External System Adapter**: Moduli che ricevono input da sistemi esterni (app mobile, dispositivi IoT, controllo remoto) e li inoltrano ai controller tramite canali di rete. Questi sistemi sono trattati come “utenti remoti” dal Presentation Layer.
 
+```
 +---------------------------------------------------+
 |  +-------------------+ +-----------------------+  |
 |  |        UI         | |     External System   |  |
@@ -35,6 +36,7 @@ Il Presentation Layer è suddiviso in tre sotto-componenti principali:
 |  +---------------------------------------------+  |
 |              Presentation Layer                   |
 +---------------------------------------------------+
+```
 
 ### Dettaglio Application Layer
 
@@ -46,9 +48,11 @@ L’Application Layer del sistema della lavatrice intelligente è suddiviso in t
 
 - **Machine Management**: Racchiude la logica di business specifica della lavatrice: pianificazione, esecuzione e monitoraggio dei cicli, diagnostica, reset, gestione errori, notifiche, ecc.
 
+```
 +------------------------------------------------------------------+
 |  +-------------------+ +-------------+ +----------------------+  |
 |  |   Integration     | |  Security   | |  Machine Management  |  |
 |  +-------------------+ +-------------+ +----------------------+  |
 |                        Application Layer                         |
 +------------------------------------------------------------------+
+```
