@@ -108,6 +108,7 @@ class AuthController is
     onLogin(username: string, password: string): bool // chiama authService.login()
     onLogout(): bool // chiama authService.logout()
     OnRecoverPassword(username: string)
+    getQr(): string
 ```
 // Descrizione: Controller del Presentation Layer dedicato alla gestione delle operazioni di login e logout. Riceve i dati dalla view di login/logout, effettua una verifica dei campi e li inoltra ad AuthenticationService.
 
@@ -370,13 +371,16 @@ class AuthenticationService is
     logout(): void
     verifySession(idSession: string): bool
     refreshSession(idSession: string): Session
-    recoverPassword(username: string).
+    recoverPassword(username: string)
     isDeviceAuthenticated(deviceId: string): bool
+    loginWithQR(userId: sring, qrCodeData: string): bool
+    generateLoginQR(): string // one-time token, l’app (già autenticata) invia userId al backend dopo la scansione.
 ```
 // Descrizione: Application Service che gestisce l’autenticazione locale di utenti e dispositivi. Espone operazioni di login/logout e di verifica, verifica e rinnovo della sessione locale.
 // Il sistema attuale è progettato per autenticazione locale e gestione multi-sessione (lista di Session), per un sistemi chiusi.
 La lavatrice mantiene lo stato delle sessioni attive (Session), può invalidare una sessione, gestire login/logout in modo diretto.
-I dispositivi IoT e remoti inviano la sessione (idSession token della sezione), che viene validata localmente.
+I dispositivi IoT e remoti inviano la sessione (idSession della sezione), che viene validata localmente.
+loginWithQR: Si occupa di validare il QR code, estrarre le credenziali o il token, e autenticare l’utente.
 
 **Class Session**
 ```
