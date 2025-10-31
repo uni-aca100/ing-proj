@@ -125,6 +125,8 @@ class IoTDeviceForm is
     selectDevice(device: IoTDevice) // seleziona dispositivo
     submitAssociate() // chiama controller.onAssociateDevice(selectedDevice)
     submitDissociate() // chiama controller.onDissociateDevice(selectedDevice)
+    turnOffOptimization()
+    turnOnOptimization()
     render()
 ```
 // Descrizione: menu del Presentation Layer per la gestione dei dispositivi IoT. Permette all’utente di avviare la scansione, selezionare un dispositivo, associarlo/dissociarlo e visualizzare lo stato.
@@ -139,6 +141,8 @@ class IoTDeviceController is
     onScanDevices(): List<IoTDevice> // chiama iotService.discoverDevices()
     onAssociateDevice(device: IoTDevice): bool // chiama iotService.associateDevice(device)
     onDissociateDevice(device: IoTDevice): bool // chiama iotService.dissociateDevice(device)
+    onTurnOffOptimization(): bool
+    onTurnOnOptimization(): bool
 ```
 // Descrizione: Controller del Presentation Layer che gestisce le operazioni di scansione, associazione e dissociazione dispositivi IoT. Riceve le azioni dal form/menu e le inoltra al servizio di integrazione IoT.
 
@@ -340,6 +344,7 @@ class IoTIntegrationService is
     devices: List<IoTDevice> // dispositivi IoT associati
     washingManager: WashingManager // associazione per ottimizzazione
     auth: AuthenticationService // per autenticare dispositivi IoT
+    optimization: bool // attiva/disattiva
 
     // Metodi
     discoverDevices(): List<IoTDevice>
@@ -347,6 +352,8 @@ class IoTIntegrationService is
     dissociateDevice(device: IoTDevice): bool
     receiveData(device: IoTDevice): string
     processIoTData(iotData: string)
+    turnOffOptimization()
+    turnOnOptimization()
 ```
 // Descrizione: Classe dell'Application Layer che gestisce l'integrazione e la comunicazione con dispositivi IoT esterni (es. termostati, contatore intelligente). Utilizza NetworkInterface per la comunicazione di rete, mantiene la lista dei dispositivi associati, riceve dati e invia comandi. Il metodo processIoTData interpreta i dati ricevuti dai dispositivi IoT e invoca washingManager.optimizeCycle(iotData) per ottimizzare il ciclo di lavaggio in base alle informazioni raccolte.
 

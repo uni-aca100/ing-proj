@@ -218,7 +218,7 @@ Il sistema si integra con altri dispositivi IoT presenti nell’abitazione (come
 
 ---
 
-**Caso d’uso:** Annullamento Ottimizzazione IoT  
+**Caso d’uso:** Annulla Ottimizzazione IoT  
 **Attore principale:** Utente  
 **Attore secondario:** Sistema  
 **Descrizione:**  
@@ -238,6 +238,31 @@ L’utente può annullare in qualsiasi momento l’ottimizzazione dei consumi en
 **Postcondizioni:**  
 - L’ottimizzazione IoT è disattivata e il ciclo di lavaggio segue le modalità standard.
 - L’utente è informato dell’annullamento.
+
+---
+
+**Caso d’uso:** Attiva Ottimizzazione IoT  
+**Attore principale:** Utente  
+**Attore secondario:** Sistema, Dispositivi IoT esterni  
+**Descrizione:**  
+L’utente può riattivare in qualsiasi momento la strategia di ottimizzazione dei consumi energetici basata sull’integrazione con dispositivi IoT, dopo che era stata precedentemente disattivata. Il sistema riprende a utilizzare i dati dei dispositivi IoT per ottimizzare i cicli di lavaggio.
+
+**Precondizioni:**  
+- L’ottimizzazione IoT è disattivata.  
+- Esiste almeno un dispositivo IoT associato e disponibile.
+
+**Flusso principale degli eventi:**  
+1. L’utente seleziona l’opzione per riattivare l’ottimizzazione IoT tramite l’interfaccia.  
+2. Il sistema verifica la presenza di dispositivi IoT associati e disponibili.  
+3. Il sistema riattiva la strategia di ottimizzazione dei consumi tramite integrazione IoT.  
+4. Il sistema notifica l’utente dell’avvenuta riattivazione o segnala eventuali errori.
+
+**Estensioni:**  
+- [Estende: Integrazione IoT ottimizzazione Consumi] L’utente può riattivare l’ottimizzazione in qualsiasi momento, se sono disponibili dispositivi IoT associati.
+
+**Postcondizioni:**  
+- L’ottimizzazione IoT è attiva e i cicli di lavaggio successivi seguiranno la strategia ottimizzata.  
+- L’utente è informato dell’avvenuta riattivazione o di eventuali problemi.
 
 ---
 
