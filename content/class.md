@@ -116,13 +116,13 @@ class AuthController is
 ```
 class IoTDeviceForm is
     // Attributi
-    devices: List<IoTDevice> // elenco dispositivi trovati
-    selected: IoTDevice // dispositivo selezionato
-    controller: IoTDeviceController // riferimento al controller
+    devices: List<IDevice> // elenco dispositivi trovati
+    selected: Device // dispositivo selezionato
+    controller: DeviceController // riferimento al controller
 
     // Metodi
     scanDevices() // chiama controller.onScanDevices() e ottiene i dispositivi disponibili
-    selectDevice(device: IoTDevice) // seleziona dispositivo
+    selectDevice(device: Device) // seleziona dispositivo
     submitAssociate() // chiama controller.onAssociateDevice(selectedDevice)
     submitDissociate() // chiama controller.onDissociateDevice(selectedDevice)
     turnOffOptimization()
@@ -138,9 +138,9 @@ class IoTDeviceController is
     iotService: IoTIntegrationService // dipendenza verso Application Service
 
     // Metodi
-    onScanDevices(): List<IoTDevice> // chiama iotService.discoverDevices()
-    onAssociateDevice(device: IoTDevice): bool // chiama iotService.associateDevice(device)
-    onDissociateDevice(device: IoTDevice): bool // chiama iotService.dissociateDevice(device)
+    onScanDevices(): List<Device> // chiama iotService.discoverDevices()
+    onAssociateDevice(device: Device): bool // chiama iotService.associateDevice(device)
+    onDissociateDevice(device: Device): bool // chiama iotService.dissociateDevice(device)
     onTurnOffOptimization(): bool
     onTurnOnOptimization(): bool
 ```
@@ -341,30 +341,31 @@ class RemoteCommandManager is
 class IoTIntegrationService is
     // Attributi
     network: NetworkInterface // associazione con Hardware Layer
-    devices: List<IoTDevice> // dispositivi IoT associati
+    devices: List<Device> // dispositivi IoT associati
     washingManager: WashingManager // associazione per ottimizzazione
     auth: AuthenticationService // per autenticare dispositivi IoT
     optimization: bool // attiva/disattiva
 
     // Metodi
-    discoverDevices(): List<IoTDevice>
-    associateDevice(device: IoTDevice): bool
-    dissociateDevice(device: IoTDevice): bool
-    receiveData(device: IoTDevice): string
+    discoverDevices(): List<Device>
+    associateDevice(device: Device): bool
+    dissociateDevice(device: Device): bool
+    receiveData(device: Device): string
     processIoTData(iotData: string)
     turnOffOptimization()
     turnOnOptimization()
 ```
 // Descrizione: Classe dell'Application Layer che gestisce l'integrazione e la comunicazione con dispositivi IoT esterni (es. termostati, contatore intelligente). Utilizza NetworkInterface per la comunicazione di rete, mantiene la lista dei dispositivi associati, riceve dati e invia comandi. Il metodo processIoTData interpreta i dati ricevuti dai dispositivi IoT e invoca washingManager.optimizeCycle(iotData) per ottimizzare il ciclo di lavaggio in base alle informazioni raccolte.
 
-**classe IoTDevice**
+**classe device**
 ```
-classe IoTDevice is
+classe Device is
     id: string // UUID o MAC
     ipAddress: string
     nome: string
+    tipo: string // IoT, mobile device ecc.
 ```
-// Descrizione: rappresenta un generico dispositivo IoT integrabile con la lavatrice (es. termostato, contatore intelligente, sensore ambiente).
+// Descrizione: rappresenta un generico dispositivo che può essere un IoT integrabile con la lavatrice (es. termostato, contatore intelligente, sensore ambiente) o un device mobile per il controllo remoto ecc.
 
 **Class AuthenticationService**
 ```
@@ -509,7 +510,7 @@ interface NetworkInterface is
 - CommandDispatcher *inotra* a WashControlController, WashPlanningController, etc. (associazione)
 - IoTIntegrationService *utilizza* NetworkInterface (associazione)
 - IoTIntegrationService *inoltra a* WashingManager (associazione)
-- IoTIntegrationService *gestisce* IoTDevice (aggregazione)
+- IoTIntegrationService *gestisce* Device (aggregazione)
 - AuthenticationService *crea e gestisce* Session (composizione)
 - AuthenticationService *utilizza* NetworkInterface (associazione)
 - RemoteCommandManager *utilizza* AuthenticationService per autenticare comandi remoti (associazione)
