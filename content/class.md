@@ -321,20 +321,36 @@ class VoiceCommandInterpreter is
 ```
 // Descrizione: Interpreta il segnale vocale ricevuto dal Hardware Layer tramite VoiceSignalReceiver, analizza il segnale e lo trasforma in una commando da inoltrare al Presentation Layer tramite il dispatcher. Ora verifica l'autenticazione prima di attivare i comandi vocali.
 
-**Class RemoteCommandManager**
+**Class RemoteCommandInterpreter**
 ```
-class RemoteCommandManager is
+class RemoteCommandInterpreter is
     // Attributi
-    network: NetworkInterface // associazione con Hardware Layer
     dispatcher: CommandDispatcher // riferimento al dispatcher Presentation Layer
-    auth: AuthenticationService // per autenticare comandi remoti
 
     // Metodi
-    receiveRemoteCommand(): string
     interpretCommand(cmd: string)
     forwardToDispatcher(cmd: string)
 ```
-// Descrizione: Classe dell'Application Layer che gestisce la comunicazione con dispositivi remoti (app mobile, cloud, IoT). Utilizza NetworkInterface per ricevere comandi, li interpreta e li inoltra al dispatcher del Presentation Layer, che li smista ai controller appropriati. Gestisce sicurezza e validazione.
+// Descrizione: Gestisce la comunicazione con dispositivi remoti di controllo (app mobile, smart speaker, ecc.). interpreta i commandi ricevuti e li inoltra al dispatcher del Presentation Layer. Si appoggia a RemoteControlManager per la gestione e verifica dei dispositivi di controllo. Non gestisce dispositivi IoT (che sono gestiti da IoTIntegrationService).
+
+**Class RemoteControlManager**
+```
+class RemoteControlManager is
+    // Attributi
+    decices: list<Device> // device remoti connessi
+    network: NetworkInterface // associazione con Hardware Layer
+    auth: AuthenticationService // per autenticare i device remoti
+    interpreter: RemoteCommandInterpreter // riferimento per la gestione dei dispositivi di controllo
+
+    // Metodi
+    accept(device: Device)
+    remove(device: Device)
+    listen() // start connection
+    handleCommunication(device: Device) // interpreter.interpretCommand(smd) e verifica l'auth del device
+    broadcast(data: string) // send data to all connected devices 
+```
+// RemoteControlManager gestisce la registrazione, autenticazione (tramite AuthenticationService) e comunicazione con i dispositivi di controllo remoto (ad esempio app mobile, smart speaker, tablet, ecc.) che interagiscono con la lavatrice intelligente.
+gestire la comunicazione, ascoltare nuove connessioni e inviare dati a tutti i dispositivi remoti associati.
 
 **Class IoTIntegrationService**
 ```
@@ -362,6 +378,7 @@ class IoTIntegrationService is
 classe Device is
     id: string // UUID o MAC
     ipAddress: string
+    port: int // porta di comunicazione
     nome: string
     tipo: string // IoT, mobile device ecc.
 ```
@@ -480,7 +497,8 @@ interface VoiceInputDevice is
 ```
 interface NetworkInterface is
     // Metodi
-    connect(networkConfig: NetworkConfig)
+    connect(config: NetworkConfig)
+    listen(config: NetworkConfig)
     disconnect()
     sendData(data: NetworkPacket)
     receiveData(): NetworkPacket
@@ -505,15 +523,15 @@ interface NetworkInterface is
 - WashControlController *utilizza* WashingManager per il controllo ciclo (dipendenza Presentation → Application Layer).
 - WashControlMenu *utilizza* WashControlController per inviare i comandi di controllo (dipendenza Presentation → Controller).
 - VoiceCommandInterpreter *invia* il commando intepretato a CommandDispatcher (Application → Presentation Layer): il risultato dell'interpretazione viene passato al dispatcher che lo inoltra al controller appropriato.
-- RemoteCommandManager *utilizza* NetworkInterface ((associazione))
-- RemoteCommandManager *inotra* comandi a CommandDispatcher (associazione)
+- RemoteCommandInterpreter *utilizza* NetworkInterface ((associazione))
+- RemoteCommandInterpreter *inotra* comandi a CommandDispatcher (associazione)
 - CommandDispatcher *inotra* a WashControlController, WashPlanningController, etc. (associazione)
 - IoTIntegrationService *utilizza* NetworkInterface (associazione)
 - IoTIntegrationService *inoltra a* WashingManager (associazione)
 - IoTIntegrationService *gestisce* Device (aggregazione)
 - AuthenticationService *crea e gestisce* Session (composizione)
 - AuthenticationService *utilizza* NetworkInterface (associazione)
-- RemoteCommandManager *utilizza* AuthenticationService per autenticare comandi remoti (associazione)
+- RemoteCommandInterpreter *utilizza* AuthenticationService per autenticare comandi remoti (associazione)
 - IoTIntegrationService *utilizza* AuthenticationService per autenticare dispositivi IoT (associazione)
 - AuthController (associato a) AuthenticationService
 - LoginForm (associato a) AuthController
@@ -530,6 +548,8 @@ interface NetworkInterface is
 - DiagnosticMenu (associato a) DiagnosticController
 - DiagnosticController (associato a) AuthenticationService
 - DiagnosticController (associato a) LavatriceHardwareInterface
+- RemoteControlManager *gestisce* Device (aggregazione)
+- RemoteControlManager *utilizza* RemoteCommandInterpreter (associazione)
 
 **Dependency**:
 - WashPlanningService 'utilizza' PianoLavaggio per la creazione di nuovo Piano
