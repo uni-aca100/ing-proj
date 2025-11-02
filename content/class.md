@@ -498,7 +498,7 @@ interface VoiceInputDevice is
 interface NetworkInterface is
     // Metodi
     connect(config: NetworkConfig)
-    listen(config: NetworkConfig)
+    bind(config: NetworkConfig)
     disconnect()
     sendData(data: NetworkPacket)
     receiveData(): NetworkPacket
