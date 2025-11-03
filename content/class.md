@@ -221,6 +221,37 @@ class DiagnosticController is
 ```
 // Descrizione: Controller del Presentation Layer che riceve le richieste dalla view/menu, effettua eventuali validazioni e inoltra la richiesta all’application layer.
 
+**Classe NotificationMenu**
+```
+class NotificationMenu is
+    // Attributi
+    controller: NotificationController // riferimento al controller
+    Notifications: List<Notification> // lista notifiche da visualizzare
+
+    // Metodi
+    render()
+    open(id: string) chiama controller.onGet(id)
+    markAsRead(id: string) // chiama controller.onMarkAsRead(id)
+    delete(id: string) // chiama controller.onDeleteNotification(id)
+    clearAll()
+```
+// Descrizione: View/menu del Presentation Layer che mostra la lista delle notifiche all’utente, permette di segnarle come lette o eliminarle. Interagisce con NotificationController per tutte le operazioni.
+
+**Classe NotificationController**
+```
+class NotificationController is
+    // Attributi
+    notificationService: NotificationService // dipendenza verso Application Service
+
+    // Metodi
+    onGet(id:string): Notification 
+    onGetAll(): List<Notification> // chiama notificationService.getAll()
+    onMarkAsRead(id: string) // chiama notificationService.get(id).markAsRead()
+    onDelete(id: string) // chiama notificationService.delete(id)
+    onClearAll() // chiama notificationService.clearAll()
+```
+// Descrizione: Controller del Presentation Layer che gestisce la logica di presentazione delle notifiche. Riceve le richieste dalla view/menu e le inoltra a NotificationService.
+
 ---
 
 ## Application Layer
@@ -287,6 +318,7 @@ class WashingManager is
     stato: StatoLavaggio // es: in esecuzione, in pausa, completato, errore
     piano: PianoLavaggio
     hardware: LavatriceHardwareInterface
+    notification: NotificationService // to push notification when needed
 
     // Metodi
     avviaLavaggio(piano: PianoLavaggio)
@@ -430,11 +462,11 @@ class ResetHandler is
     // Attributi
     hardware: LavatriceHardwareInterface // dipendenza verso Hardware Layer
     authService: AuthenticationService // dipendenza per verifica autenticazione
+    notification: NotificationService // to push notification when needed
 
     // Metodi
-    resetLavatrice(sessionId: String)// verifica autenticazione tramite authService.verifySessio (sessionId) prima di eseguire il reset
+    resetLavatrice(sessionId: String) // verifica autenticazione tramite authService.verifySessio (sessionId) prima di eseguire il reset, chima.notification() 
     checkStatusMachine(): string // controlla lo stato attuale
-    notificaEsitoReset() // notifica l'esito all'utente/sistema 
 ```
 // Descrizione: Application Service dedicato alla gestione della logica di reset della lavatrice. Riceve richieste dal controller/menu, verifica l'autenticazione tramite AuthenticationService, coordina le operazioni di reset (interruzione operazioni, scarico acqua, azzeramento errori), comunica con l’interfaccia hardware e notifica l’esito.
 
@@ -444,6 +476,7 @@ class DiagnosticHandler is
     // Attributi
     hardware: LavatriceHardwareInterface // dipendenza verso Hardware Layer
     authService: AuthenticationService // dipendenza per verifica autenticazione
+    notofication: NotificationService // push notification when needed
 
     // Metodi
     execute(sessionId: string): DiagnosticReport // verifica autenticazione, interroga hardware, costruisce report
@@ -458,6 +491,42 @@ class DiagnosticReport is
     errori: List<ErroreLavatrice>
 ```
 // Descrizione: Oggetto che rappresenta il risultato della diagnostica (esito, eventuali errori rilevati).
+
+**Classe Notification**
+```
+class Notification is
+    // Attributi
+    id: string
+    tipo: string // info, warning, error
+    messaggio: string
+    dataOra: DateTime
+    stato: string // letta/non letta
+
+    // Metodi
+    markAsRead()
+```
+// Descrizione: Rappresenta una notifica generata dal sistema (evento, errore, stato, ecc.) e destinata all’utente. Può essere visualizzata su display, app mobile, ecc.
+
+**Classe NotificationService**
+```
+class NotificationService is
+    // Attributi
+    notifications: List<Notification> // notifiche disponibili
+    remote: RemoteControlManager
+
+    // Metodi
+    push(tipo: string, messaggio: string) // crea e invia notifiche, chiama remote.broadcast()
+    get(id: string): Notification
+    getAll(): List<Notification>
+    delete(id: string)
+    clearAll()
+```
+// Descrizione: Service centralizzato che gestisce la creazione, memorizzazione e invio delle notifiche agli utenti. Può essere invocato da WashingManager, DiagnosticHandler, ResetHandler, ecc.
+
+// Relazioni principali:
+// - WashingManager, DiagnosticHandler, ResetHandler -> NotificationService (invocano push)
+// - NotificationService -> Notification (gestisce la lista)
+// - Presentation Layer (UI/Menu) → NotificationService (recupera notifiche per l’utente)
 
 ---
 
