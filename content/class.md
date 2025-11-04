@@ -279,10 +279,10 @@ class Scheduler
     // Metodi
     validaSchedule(sch: schedule);
     aggiungiSchedule(newShedule: schedule)
-    avviaCiclo(piano: PianoLavaggio) // invoca manager.avviaCiclo()
-    onTick(currentTime: DateTime) // reazione allo scorrere del tempo chiamato dal Clock ad ogni tick
+    onTick(currentTime: DateTime) // reazione allo scorrere del tempo chiamato dal Clock ad ogni
 ```
 // Descrizione: Si occupa della pianificazione e gestione temporale dei cicli di lavaggio. Mantiene la lista delle pianificazioni (Schedule), riceve eventi temporali (onTick) e, quando necessario, delega l'esecuzione dei cicli al WashingManager. Garantisce la separazione tra logica di scheduling e logica di esecuzione.
+onTock incova manager.avviaLavaggio(piano)
 
 **Classe Schedule**
 ```
