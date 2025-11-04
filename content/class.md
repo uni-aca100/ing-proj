@@ -261,6 +261,7 @@ class NotificationController is
 class WashPlanningService  is
     // Attributi
     scheduler: Scheduler // associazione/collaborazione
+    notification: NotificationService // notifica il risultato della pianifica
 
     // Metodi
     validaParametri(parametriPiano: map<string, string>) 
@@ -270,7 +271,7 @@ class WashPlanningService  is
 
 **Classe Scheduler**
 ```
-class Scheduler implements ClockObserver is
+class Scheduler
     // Attributi
     schedules: List<Schedule>
     manager: WashingManager // associazione/collaborazione
