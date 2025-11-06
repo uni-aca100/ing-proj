@@ -123,8 +123,8 @@ class IoTDeviceForm is
     // Metodi
     scanDevices() // chiama controller.onScanDevices() e ottiene i dispositivi disponibili
     selectDevice(device: Device) // seleziona dispositivo
-    submitAssociate() // chiama controller.onAssociateDevice(selectedDevice)
-    submitDissociate() // chiama controller.onDissociateDevice(selectedDevice)
+    associate() // chiama controller.onAssociateDevice(selectedDevice)
+    dissociate() // chiama controller.onDissociateDevice(selectedDevice)
     turnOffOptimization()
     turnOnOptimization()
     render()
@@ -393,6 +393,7 @@ class IoTIntegrationService is
     devices: List<Device> // dispositivi IoT associati
     washingManager: WashingManager // associazione per ottimizzazione
     auth: AuthenticationService // per autenticare dispositivi IoT
+    NotificationService // to push notification when needed
     optimization: bool // attiva/disattiva
 
     // Metodi
@@ -572,6 +573,7 @@ interface NetworkInterface is
     disconnect()
     sendData(data: NetworkPacket)
     receiveData(): NetworkPacket
+    broadcast(data: NetworkPacket)
 ```
 // Descrizione: Interfaccia dell'Hardware Layer che astrae la connettività di rete (Wi-Fi, Ethernet, ecc.). Permette alla lavatrice di connettersi a una rete, inviare/ricevere dati (per IoT, controllo remoto, aggiornamenti, ecc.). Implementata da moduli hardware specifici.
 
