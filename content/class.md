@@ -392,7 +392,6 @@ class IoTIntegrationService is
     network: NetworkInterface // associazione con Hardware Layer
     devices: List<Device> // dispositivi IoT associati
     washingManager: WashingManager // associazione per ottimizzazione
-    auth: AuthenticationService // per autenticare dispositivi IoT
     NotificationService // to push notification when needed
     optimization: bool // attiva/disattiva
 
