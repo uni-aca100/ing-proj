@@ -48,7 +48,7 @@ class WashControlMenu is
     controller: WashControlController // riferimento al controller
 
     // Metodi
-    render()
+    render() // render the interface and call controller.onGetTaskProgress()/getTaskProgress() etc. at regular intervals
     inviaComandoPausa() // chiama eventualmente controller.onPausaLavaggio()
     inviaComandoRiprendi() // chiama eventualmente controller.onriPrendiLavaggio()
     inviaComandoAnnulla() // chiama eventualmente controller.onPausaLavaggio()
@@ -66,6 +66,7 @@ class WashControlController is
     onRiprendiLavaggio() // ...
     onAnnullaLavaggio()
     onGetState()
+    onGetTaskProgress(): Int // call washingControl.getTaskProgress()
 ```
 // Descrizione: Controller del Presentation Layer che espone le operazioni di controllo ciclo (pausa, riprendi, annulla, stato) verso la UI. Riceve i comandi dalle view/menu e li inoltra al WashingManager eventualmente dopo un verifica sullo stato corrente.
 
@@ -330,6 +331,7 @@ class WashingManager is
     aggiornaStato()
     getState()
     optimizeCycle(iotData: string)
+    getTaskProgress(): Int 0 to 100
 ```
 // Descrizione: Gestisce l'esecuzione delle fasi del ciclo di lavaggio, interfacciandosi con l'Hardware Layer tramite LavatriceHardwareInterface. Riceve richieste da Scheduler/Schedule e invia comandi all'hardware. Gestisce feedback/eventi dall'hardware (fine fase, errori, ecc.).
 Inotre si comporta come Application Service che espone le operazioni di controllo del ciclo di lavaggio di lavaggio in corso (pausa, riprendi, annulla) verso il Presentation Layer. Riceve le richieste dal livello superiore per il controllo del lavaggio in cosrso.
