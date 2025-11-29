@@ -9,6 +9,7 @@ class WashPlanningForm is
     parametriPiano: map<string, string> // input utente (nome, temperatura, durata, ecc.)
     dataOra: DateTime // data/ora pianificazione
     controller: WashPlanningController // riferimento al controller
+    conf: UIConfiguration // for the rendering config
 
     // Metodi
     submit()  // chiama controller.onPianificaLavaggio(parametriPiano, now)
@@ -23,6 +24,7 @@ class WashStartForm is
     parametriPiano: map<string, string> // con alcuni campi precompilati (eventualmente nascosti)
     dataOra: DateTime = now // campo nascosto o preimpostato all'istante corrente
     controller: WashPlanningController // riferimento al controller
+    conf: UIConfiguration // for the rendering config
 
     // Metodi
     submit() // chiama controller.onPianificaLavaggio(parametriPiano, now)
@@ -46,6 +48,7 @@ class WashPlanningController is
 class WashControlMenu is
     // Attributi
     controller: WashControlController // riferimento al controller
+    conf: UIConfiguration // for the rendering config
 
     // Metodi
     render() // render the interface and call controller.onGetTaskProgress()/getTaskProgress() etc. at regular intervals
@@ -90,6 +93,7 @@ class LoginForm is
     username: string
     password: string
     controller: AuthController // riferimento al controller
+    conf: UIConfiguration // for the rendering config
 
     // Metodi
     submitLogin() // chiama controller.onLogin(username, password)
@@ -120,6 +124,7 @@ class IoTDeviceForm is
     devices: List<IDevice> // elenco dispositivi trovati
     selected: Device // dispositivo selezionato
     controller: DeviceController // riferimento al controller
+    conf: UIConfiguration // for the rendering config
 
     // Metodi
     scanDevices() // chiama controller.onScanDevices() e ottiene i dispositivi disponibili
@@ -152,6 +157,7 @@ class IoTDeviceController is
 class VoiceCommandMenu is
     // Attributi
     controller: VoiceCommandController // riferimento al controller
+    conf: UIConfiguration // for the rendering config
 
     // Metodi
     activateVoiceCommands() // chiama controller.onActivateVoiceCommands(system.sessionId)
@@ -177,6 +183,7 @@ class VoiceCommandController is
 class ResetMenu is
     // Attributi
     controller: ResetController // riferimento al controller
+    conf: UIConfiguration // for the rendering config
 
     // Metodi
     render()
@@ -203,6 +210,7 @@ class ResetController is
 class DiagnosticMenu is
     // Attributi
     controller: DiagnosticController // riferimento al controller
+    conf: UIConfiguration // for the rendering config
 
     // Metodi
     render()
@@ -228,6 +236,7 @@ class NotificationMenu is
     // Attributi
     controller: NotificationController // riferimento al controller
     Notifications: List<Notification> // lista notifiche da visualizzare
+    conf: UIConfiguration // for the rendering config
 
     // Metodi
     render()
@@ -256,6 +265,30 @@ class NotificationController is
 ---
 
 ## Application Layer
+
+**Classe UIConfiguration**
+```
+class UIConfiguration is
+    // utilizza il sigleton pattern
+    static instance: UIConfiguration
+    // Attributi
+    mode: string // dark | light
+    fontSize: int // es. 12..36
+    contrast: string // normal | high
+    fontFamily: string
+    language: string
+    largeText: bool
+    // ...etc
+    // TODO 
+    userId: string? // opzionale: configurazione per utente, altrimenti system/default
+
+    // Metodi
+    // setter and getter impliciti per ogni parametro
+    static resetToDefaults()
+    static getInstance(): UIConfiguration
+```
+// Descrizione: Oggetto (singleton) che rappresenta la configurazione dell'interfaccia (tema, dimensione font, contrasto, lingua, accessibilità).
+
 
 **Classe servizioPianificazioneCicli**
 ```
