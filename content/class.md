@@ -262,6 +262,34 @@ class NotificationController is
 ```
 // Descrizione: Controller del Presentation Layer che gestisce la logica di presentazione delle notifiche. Riceve le richieste dalla view/menu e le inoltra a NotificationService.
 
+**Classe UIConfigurationMenu**
+```
+class UIConfigurationMenu is
+    // Attributi
+    controller: UIConfigurationController // riferimento al controller
+    conf: UIConfiguration // configurazione corrente (singleton)
+    options: map<string, string>
+
+    // Metodi
+    render() // mostra le opzioni di personalizzazione
+    saveConfig() // chiama controller.onSaveConfig(options)
+    resetToDefaults() // chiama controller.onResetConfig()
+```
+// Descrizione: Menu/view del Presentation Layer che permette all’utente di personalizzare la configurazione UI (tema, font, contrasto, ecc.) salvare o resettare ai valori di default. Interagisce con UIConfigurationController per tutte le operazioni.
+
+**Classe UIConfigurationController**
+```
+class UIConfigurationController is
+    // Attributi
+    confService: UIConfiguration // dipendenza verso Application Layer
+
+    // Metodi
+    onSaveConfig(options: map<string, string>) // valida e aggiorna la configurazione
+    onReset() // resetta ai valori di default
+    onGetConfig(): UIConfiguration // restituisce la configurazione corrente
+```
+// Descrizione: Controller del Presentation Layer che riceve le richieste di personalizzazione dalla UI, valida i dati, aggiorna il singleton UIConfiguration
+
 ---
 
 ## Application Layer
