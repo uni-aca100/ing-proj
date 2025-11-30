@@ -188,8 +188,6 @@ class ResetMenu is
     // Metodi
     render()
     reset() // chiama controller.onResetLavatrice(sessionId)
-    checkMachineStatus() // controller.onCheckMachineStatus()
-    renderResetResult(esito: boolean, dettagli: string) // incovato da reset() al termine del reset 
 ```
 // Descrizione: View/menu del Presentation Layer che offre all’utente la possibilità di avviare la procedura di reset, visualizza lo stato e l’esito dell’operazione.
 
@@ -201,7 +199,6 @@ class ResetController is
 
     // Metodi
     onReset(sessionId: string) // chiama resetHandler.resetLavatrice(sessionId)
-    onCheckMachineStatus() // chiama resetHandler.verificaStatoLavatrice()
 ```
 // Descrizione: Controller del Presentation Layer che riceve la richiesta di reset dalla view/menu, effettua eventuali validazioni (es. sessione utente), inoltra la richiesta al ResetHandler.
 
@@ -530,7 +527,6 @@ class ResetHandler is
 
     // Metodi
     resetLavatrice(sessionId: String) // verifica autenticazione tramite authService.verifySessio (sessionId) prima di eseguire il reset, chima.notification() 
-    checkStatusMachine(): string // controlla lo stato attuale
 ```
 // Descrizione: Application Service dedicato alla gestione della logica di reset della lavatrice. Riceve richieste dal controller/menu, verifica l'autenticazione tramite AuthenticationService, coordina le operazioni di reset (interruzione operazioni, scarico acqua, azzeramento errori), comunica con l’interfaccia hardware e notifica l’esito.
 
