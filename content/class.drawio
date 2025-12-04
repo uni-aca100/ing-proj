@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64; rv:145.0) Gecko/20100101 Firefox/145.0" version="29.2.1">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64; rv:145.0) Gecko/20100101 Firefox/145.0" version="29.2.4">
   <diagram name="Page-1" id="EO5JnC7Pe666eqd65hcy">
     <mxGraphModel dx="3033" dy="766" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -1246,7 +1246,7 @@
           <mxGeometry height="30" width="170" y="154" as="geometry" />
         </mxCell>
         <mxCell id="ptnFOtXzAilD2fHU7Rqj-47" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="UIConfigurationController" vertex="1">
-          <mxGeometry height="150" width="260" x="1240" y="580" as="geometry" />
+          <mxGeometry height="120" width="260" x="1240" y="580" as="geometry" />
         </mxCell>
         <mxCell id="ptnFOtXzAilD2fHU7Rqj-48" parent="ptnFOtXzAilD2fHU7Rqj-47" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="..." vertex="1">
           <mxGeometry height="26" width="260" y="26" as="geometry" />
@@ -1259,9 +1259,6 @@
         </mxCell>
         <mxCell id="ptnFOtXzAilD2fHU7Rqj-51" parent="ptnFOtXzAilD2fHU7Rqj-47" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="+ onReset()" vertex="1">
           <mxGeometry height="30" width="260" y="90" as="geometry" />
-        </mxCell>
-        <mxCell id="ptnFOtXzAilD2fHU7Rqj-52" parent="ptnFOtXzAilD2fHU7Rqj-47" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="+ onGetConfig(): UIConfiguration" vertex="1">
-          <mxGeometry height="30" width="260" y="120" as="geometry" />
         </mxCell>
         <mxCell id="ptnFOtXzAilD2fHU7Rqj-53" edge="1" parent="1" source="ptnFOtXzAilD2fHU7Rqj-40" style="endArrow=open;endFill=1;endSize=12;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;" target="ptnFOtXzAilD2fHU7Rqj-47" value="">
           <mxGeometry relative="1" width="160" as="geometry">

@@ -283,7 +283,6 @@ class UIConfigurationController is
     // Metodi
     onSaveConfig(options: map<string, string>) // valida e aggiorna la configurazione
     onReset() // resetta ai valori di default
-    onGetConfig(): UIConfiguration // restituisce la configurazione corrente
 ```
 // Descrizione: Controller del Presentation Layer che riceve le richieste di personalizzazione dalla UI, valida i dati, aggiorna il singleton UIConfiguration
 
@@ -304,8 +303,6 @@ class UIConfiguration is
     language: string
     largeText: bool
     // ...etc
-    // TODO 
-    userId: string? // opzionale: configurazione per utente, altrimenti system/default
 
     // Metodi
     // setter and getter impliciti per ogni parametro

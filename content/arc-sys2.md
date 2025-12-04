@@ -16,6 +16,12 @@ Esempio di flusso event-driven:
 4. Application Layer intercetta l’evento e attiva la logica di gestione errori/notifiche.
 5. Presentation Layer riceve evento "Notifica" e aggiorna l’interfaccia.
 
+### Motivazione
+La suddivisione In 3 Layers consente di separare chiaramente le responsabilità, facilitando la manutenzione, l’estendibilità e la testabilità del sistema. Ogni layer può essere sviluppato, testato e modificato indipendentemente, riducendo il rischio di introdurre bug in altre parti del sistema.
+Inoltre La Modularità del sistema così costruito permette (potenzialmente) di riutilizzare componenti in altri progetti simili, accelerando lo sviluppo futuro (es. elementi delle Application Layer che potrebbero essere utilizzati in un altro contesto se l'hardware Abstraction Layer fosse diverso ma **con interfacce compatibili**, discorso analogo per il Presentation Layer).
+
+```
+
 ### Dettaglio Presentation Layer
 
 Il Presentation Layer è suddiviso in tre sotto-componenti principali:
