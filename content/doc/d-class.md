@@ -26,7 +26,9 @@ La classe `UIConfiguration` rappresenta la configurazione globale dell’interfa
 - Centralizza la gestione della personalizzazione e dell’accessibilità.
 - Supporta la persistenza per utente o sistema (salvataggio delle preferenze in memoria).
 
-### classe UIConfigurationMenu
+---
+
+### Classe UIConfigurationMenu
 
 **Ruolo e Responsabilità:**
 La classe `UIConfigurationMenu` gestisce l’interfaccia utente per la configurazione delle impostazioni della lavatrice intelligente. Permette agli utenti di modificare le preferenze di UI attraverso un menu dedicato.
@@ -47,7 +49,9 @@ La classe `UIConfigurationMenu` gestisce l’interfaccia utente per la configura
 **motivazione:**
 - Fornisce un’interfaccia per la personalizzazione delle impostazioni di UI.
 
-### classe UIConfigurationController
+---
+
+### Classe UIConfigurationController
 **Ruolo e Responsabilità:**
 La classe `UIConfigurationController` funge da intermediario tra il menu di configurazione (`UIConfigurationMenu`, `CommandDispatcher`) e la gestione effettiva delle impostazioni (`UIConfiguration`) come descritto dal Model-View-Controller (MVC) pattern. Gestisce la logica di validazione e l'interazione con l'application layer per l'applicazione delle modifiche alle impostazioni dell’interfaccia utente.
 
@@ -65,6 +69,8 @@ La classe `UIConfigurationController` funge da intermediario tra il menu di conf
 
 **motivazione:**
 - Controller in linea con il pattern MVC. permette di separare la logica di gestione delle impostazioni dalla loro rappresentazione e interfaccia utente.
+
+---
 
 ### Classe WashingManager
 
