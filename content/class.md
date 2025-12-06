@@ -6,31 +6,16 @@
 ```
 class WashPlanningForm is
     // Attributi
-    parametriPiano: map<string, string> // input utente (nome, temperatura, durata, ecc.)
+    selectedPiano: PianoLavaggio
     dataOra: DateTime // data/ora pianificazione
     controller: WashPlanningController // riferimento al controller
     conf: UIConfiguration // for the rendering config
 
     // Metodi
-    submit()  // chiama controller.onPianificaLavaggio(parametriPiano, now)
+    submit()  // chiama controller.onPianificaLavaggio(selectedPiano, dataOra)
     render()
 ```
 // Descrizione: Form/view del Presentation Layer per la pianificazione di un ciclo (rappresenta la UI per la raccolta dei dati di pianificazione dal’utente). Raccoglie i dati dall’utente e, al submit, invoca il metodo onPianificaLavaggio del controller passando i parametri inseriti.
-
-**Classe WashStartForm**
-```
-class WashStartForm is
-    // Attributi
-    parametriPiano: map<string, string> // con alcuni campi precompilati (eventualmente nascosti)
-    dataOra: DateTime = now // campo nascosto o preimpostato all'istante corrente
-    controller: WashPlanningController // riferimento al controller
-    conf: UIConfiguration // for the rendering config
-
-    // Metodi
-    submit() // chiama controller.onPianificaLavaggio(parametriPiano, now)
-    render()
-```
-// Descrizione: Form/view specializzato per l'avvio immediato del lavaggio (rappresenta la UI per la raccolta dei dati del piano di lavaggio dal’utente). Al submit invia i parametri e la data/ora corrente al controller tramite onPianificaLavaggio.
 
 **Classe WashPlanningController**
 ```
@@ -39,7 +24,8 @@ class WashPlanningController is
     washPlanningService: WashPlanningService // dipendenza verso Application Service
 
     // Metodi
-    onPianificaLavaggio(parametriPiano: map<string, string>, dataOra: DateTime)
+    onPianificaLavaggio(piano: PianoLavaggio, dataOra: DateTime)
+    onGetCatalog(): List<PianoLavaggio>
 ```
 // Descrizione: Controller "sottile" (non contiene logica di business, delegata all'application Service) del Presentation Layer. che riceve i dati dal form/view per la pianificazione di cicli di lavaggio, ed un eventuale validazione lato presentazione (es. campi mancati). Gestisce l'iterazione con WashPlanningService (dell'application layer)
 
@@ -320,10 +306,11 @@ class WashPlanningService  is
     // Attributi
     scheduler: Scheduler // associazione/collaborazione
     notification: NotificationService // notifica il risultato della pianifica
+    catalog: List<PianoLavaggio> // catalogo piani di lavaggio disponibili
 
     // Metodi
-    validaParametri(parametriPiano: map<string, string>) 
-    pianificaLavaggio(parametriPiano: map<string, string>, dataOra: DateTime)
+    pianificaLavaggio(piano: PianoLavaggio, dataOra: DateTime)
+    getCatalog(): List<PianoLavaggio>
 ```
 // Descrizione: Application Service che espone le operazioni di pianificazione ciclo verso il Presentation Layer. Si occupa di validare i parametri ricevuti dal Presentation Layer, creare oggetti PianoLavaggio e Schedule, e aggiungere la pianificazione allo Scheduler.
 
@@ -349,9 +336,6 @@ class Schedule is
     dataOra: DateTime
     piano: PianoLavaggio
     stato: StatoSchedule // es: pianificato, in esecuzione, completato, annullato
-
-    // Metodi
-    aggiornaDataOra(nuovaDataOra): DateTime;
 ```
 
 **Classe PianoLavaggio**
@@ -364,9 +348,6 @@ class PianoLavaggio is
     velocitaCentrifuga: int
     eco: bool
     // altri parametri opzionali: prelavaggio, extra risciacquo, ecc.
-
-    // Metodi principali
-    validaParametri()
 ```
 
 

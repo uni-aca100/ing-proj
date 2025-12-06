@@ -182,29 +182,95 @@ Questa classe è l'Observer (**TODO: implementa Observer pattern**) del clock di
 
 ---
 
-### Classe WashPlanningService
-
-**TODO**: la classe va modificata per includere piani di defalult ( correntemente sono personalizzati ) 
+### Classe Schedule
 
 **Ruolo e Responsabilità:**
-La classe `WashPlanningService` è l'application service responsabile della pianificazione dei cicli di lavaggio. Espone le operazioni di pianificazione verso il Presentation Layer, riceve i parametri dal controller, valida i dati, crea oggetti `PianoLavaggio` e `Schedule`, e aggiunge la pianificazione allo Scheduler. Si occupa di garantire che le pianificazioni siano corrette e non in conflitto.
+La classe `Schedule` rappresenta una singola pianificazione di un ciclo di lavaggio. Contiene le informazioni necessarie per eseguire il ciclo in un momento specifico, come il piano di lavaggio associato e la data/ora di inizio.
 
 **Collaborazioni:**
-- Riceve input da `WashPlanningController` (Presentation Layer) che raccoglie i dati dall’utente.
-- Utilizza `PianoLavaggio` per definire i dettagli del ciclo di lavaggio.
+- Utilizzata da `WashPlanningService` per creare nuove pianificazioni.
+- Utilizzata da `Scheduler` per gestire l'insieme di pianificazioni e l’esecuzione temporale delle pianificazioni.
+
+**Principali attributi:**
+- `pianoLavaggio`: riferimento al `PianoLavaggio` associato alla pianificazione in una specifica data/ora.
+- `dataOra`: data e ora in cui il ciclo di lavaggio deve essere avviato.
+
+**Principali metodi:**
+- Getter/setter per ogni attributo.
+
+**motivazione:**
+- Rappresenta in modo strutturato le informazioni di una singola pianificazione.
+
+---
+
+### Classe WashPlanningService
+
+**Ruolo e Responsabilità:**
+La classe `WashPlanningService` è l'application service responsabile della pianificazione dei cicli di lavaggio. Espone le operazioni di pianificazione verso il Presentation Layer tramite un catalogo di piani di lavaggio disponibili, crea gli oggetti `Schedule` e le aggiunge alle pianificazioni dello scheduler. Inoltre si occupa di notificare l'utente sia in caso di successo che di errore.
+
+**Collaborazioni:**
+- Riceve input e depone i piani disponibili a `WashPlanningController` (Presentation Layer).
+- Utilizza `PianoLavaggio` per definire i dettagli del ciclo di lavaggio disponibili.
 - Utilizza `Schedule` per la creazione e gestione delle pianificazioni.
 - Interagisce con `Scheduler` per aggiungere nuove pianificazioni e aggiornarle.
 
 **Principali attributi:**
 - `scheduler`: riferimento al componente che gestisce la pianificazione temporale (`Scheduler`).
-- **TODO**: `piani`: lista delle piani di lavaggio disponibili del sistema.
+- `catalog`: lista delle piani di lavaggio disponibili del sistema.
 - `notification`: riferimento al servizio di notifica per eventuali messaggi all'utente (`NotificationService`) come errori o avvisi di successo.
 
 **Principali metodi:**
-- **TODO fix usare piani prestabiliti**
+- `getCatalog()`: `List<PianoLavaggio>` : restituisce la lista dei piani di lavaggio disponibili nel sistema (solo piani predefiniti).
+- `pianificaLavaggio(piano: PianoLavaggio, dataOra: DateTime)`: crea una nuova pianificazione (`schedule`) basata sul piano e la data/ora forniti (dal controller), le aggiunge allo scheduler tramite `Scheduler.aggiungiSchedule()` che in caso di conflitto restituisce `false` indicando l'insuccesso.
+    - Invia una notifica all’utente tramite `NotificationService.push()` indicando il risultato finale (sia esso errore o successo).
 
 **motivazione:**
-- ... TODO fix usare piani prestabiliti
+- Garantire che le pianificazioni siano corrette e non in conflitto.
+- espone le operazioni predefinite di pianificazione verso il Presentation Layer.
+
+---
+
+### Classe WashPlanningController
+**Ruolo e Responsabilità:**
+La classe `WashPlanningController` funge da intermediario tra il menu di pianificazione (`WashPlanningMenu`, `CommandDispatcher`) e la gestione effettiva delle pianificazioni (`WashPlanningService`) come descritto dal Model-View-Controller (MVC) pattern. Gestisce la logica di validazione (parametri selezionati, formato data/ora ecc.) e l'interazione con l'application layer per la creazione e gestione delle pianificazioni di lavaggio.
+
+**Collaborazioni:**
+- Interagisce con `WashPlanningService` per la creazione e gestione delle pianificazioni di lavaggio.
+- Interagisce con `WashPlanningMenu` il quale fornisce un'interfaccia per la visualizzazione e l'interazione con l'utente.
+- Interagisce con il `CommandDispatcher` per ricevere commandi di pianificazione dei lavaggi vocali/remoti.
+
+**Principali attributi:**
+- `planningService`: riferimento all’istanza di `WashPlanningService` che gestisce le pianificazioni di lavaggio.
+
+**Principali metodi:**
+- `onGetCatalog(): List<PianoLavaggio>`: restituisce il catalogo dei piani di lavaggio disponibili, richiamando `WashPlanningService.getCatalog()`.
+- `onPianificaLavaggio(piano: PianoLavaggio, dataOra: DateTime)`: gestisce la richiesta di pianificazione di un ciclo di lavaggio, richiamando `WashPlanningService.pianificaLavaggio(piano, dataOra)` ed effettuando una prima verifica.
+
+**motivazione:**
+- Controller in linea con il pattern MVC. permette di separare la logica di gestione delle pianificazioni dalla loro rappresentazione e interfaccia utente.
+- Facilita l’estendibilità e il riutilizzo riducendo la ridondanza, molteplici fonti di input possono essere gestite in modo uniforme (es. UI, comandi vocali, comandi remoti) dal controller (non interagendo direttamente con `WashPlanningService`).
+
+### Classe WashPlanningMenu
+**Ruolo e Responsabilità:**
+La classe `WashPlanningMenu` gestisce l’interfaccia utente per la pianificazione dei cicli di lavaggio della lavatrice intelligente. Permette all’utente di selezionare un piano di lavaggio dal catalogo disponibile e di specificare la data/ora per l’esecuzione del ciclo.
+
+**Collaborazioni:**
+- Interagisce con `WashPlanningController` per ottenere il catalogo dei piani di lavaggio e per inviare le richieste di pianificazione.
+- Utilizza `PianoLavaggio` per visualizzare i dettagli dei piani di lavaggio disponibili.
+
+**Principali attributi:**
+- `controller`: riferimento al `WashPlanningController` che gestisce la logica di pianificazione e restituisce i piani di lavaggio disponibili.
+- `selectedPiano` (`PianoLavaggio`) selezionato dall’utente per la pianificazione.
+- `dataOra`: data e ora selezionata dall’utente per l’esecuzione del ciclo di lavaggio.
+- `conf` (`UIConfiguration`) riferimento alla configurazione UI globale per il rendering/accessibilità.
+
+**Principali metodi:**
+- `render()`: visualizza il menu di pianificazione (qualsiasi sia la tecnologia UI utilizzata per implementare la GUI), mostrando il catalogo dei piani di lavaggio e i campi per la selezione della data/ora.
+- `submit()`: invia la richiesta di pianificazione al controller tramite `controller.onPianificaLavaggio(selectedPiano, dataOra)`.
+
+**motivazione:**
+- Implementa la view del pattern MVC, separando la presentazione dalla logica di controllo.
+- Permettendo all’utente di accedere facilmente alle funzionalità di pianificazione e di selezionare i piani di lavaggio desiderati.      
 
 ---
 
@@ -278,5 +344,24 @@ La classe `DiagnosticMenu` gestisce l’interfaccia utente dedicata alle operazi
 - Permettendo all’utente di accedere facilmente alle funzionalità di diagnostica e ai risultati.
 
 ---
+
+### Classe DiagnosticReport
+
+**Ruolo e Responsabilità:**
+La classe `DiagnosticReport` rappresenta il risultato di una procedura di diagnostica eseguita sulla lavatrice intelligente. Contiene le informazioni, eventuali anomalie rilevate ed eventuali warnings
+
+**Collaborazioni:**
+- Viene generata da `DiagnosticHandler` al termine della procedura di diagnostica.
+- Viene utilizzata da `DiagnosticController` e `DiagnosticMenu` per la visualizzazione dei risultati all’utente.
+
+**Principali attributi:**
+- `esito`: bool, se esito della procedura di diagnostica è true lo stato della lavatrice è OK.
+- `errori`: `List<ErroreLavatrice>` , lista degli errori/warning rilevati durante la diagnostica.
+
+**Principali metodi:**
+- setter and getter per gli attributi, impliciti.
+
+---
+
 
 
