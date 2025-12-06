@@ -92,11 +92,11 @@ class LoginForm is
     // Attributi
     username: string
     password: string
-    controller: AuthController // riferimento al controller
+    controller: AuthController // riferimento al controller 
     conf: UIConfiguration // for the rendering config
 
     // Metodi
-    submitLogin() // chiama controller.onLogin(username, password)
+    submitLogin() // chiama controller.onLogin(username, password) e utilizza il risultante sessionId per aggiornare la sessione in UIConfiguration
     submitLogout() // chiama controller.onLogout()
     recoverPassword(username: string)
     render()
@@ -110,7 +110,7 @@ class AuthController is
     authService: AuthenticationService // dipendenza verso Application Service
 
     // Metodi
-    onLogin(username: string, password: string): bool // chiama authService.login()
+    onLogin(username: string, password: string): sessionId: string // chiama authService.login()
     onLogout(): bool // chiama authService.logout()
     OnRecoverPassword(username: string)
     getQr(): string
@@ -208,11 +208,11 @@ class DiagnosticMenu is
     // Attributi
     controller: DiagnosticController // riferimento al controller
     conf: UIConfiguration // for the rendering config
+    lastReport: DiagnosticReport // ultimo report diagnostico visualizzato
 
     // Metodi
     render()
-    startDiagnostica() // chiama controller.onAvviaDiagnostica(sessionId)
-    renderReport(report: DiagnosticReport) // chimata al termine di avviaDiagnostica()
+    startDiagnostica() // chiama controller.onStartDiagnostica(sessionId)
 ```
 // Descrizione: View/menu del Presentation Layer che permette all’utente di avviare la diagnostica e visualizzare i risultati.
 
@@ -224,6 +224,7 @@ class DiagnosticController is
 
     // Metodi
     onStartDiagnostica(sessionId: string): DiagnosticReport // chiama diagnosticHandler.execute(sessionId)
+    onGetLastReport(): DiagnosticReport
 ```
 // Descrizione: Controller del Presentation Layer che riceve le richieste dalla view/menu, effettua eventuali validazioni e inoltra la richiesta all’application layer.
 
@@ -296,6 +297,7 @@ class UIConfiguration is
     // utilizza il sigleton pattern
     static instance: UIConfiguration
     // Attributi
+    sessionId: string
     mode: string // dark | light
     fontSize: int // es. 12..36
     contrast: string // normal | high
@@ -482,7 +484,7 @@ class AuthenticationService is
     sessions: List<Session> // gestione multi-sessione per utenti/dispositivi
 
     // Metodi
-    login(username: string, password: string): bool
+    login(username: string, password: string): sessionId: string
     logout(): void
     verifySession(idSession: string): bool
     refreshSession(idSession: string): Session
@@ -533,7 +535,8 @@ class DiagnosticHandler is
     // Attributi
     hardware: LavatriceHardwareInterface // dipendenza verso Hardware Layer
     authService: AuthenticationService // dipendenza per verifica autenticazione
-    notofication: NotificationService // push notification when needed
+    notification: NotificationService // push notification when needed
+    lastReport: DiagnosticReport
 
     // Metodi
     execute(sessionId: string): DiagnosticReport // verifica autenticazione, interroga hardware, costruisce report
