@@ -76,6 +76,7 @@ La classe `UIConfigurationMenu` gestisce l’interfaccia utente per la configura
 - `render()`: visualizza il menu di configurazione (qualsiasi sia la tecnologia UI utilizzata per implementare la GUI), recuperando le impostazioni correnti da `SystemContext` (come `UIConfiguration` e `hasUnreadNotifications`)
 - `saveConfig()`: applica le modifiche effettuate dall’utente (presenti in `options`), richiamando i metodi di `UIConfigurationController` come `onSaveConfig(options: map<string, string>)`
 - `resetToDefaults()`: ripristina le impostazioni di default, richiamando `UIConfiguration.resetToDefaults()`
+- `update(e: Event)`: gestisce le notifiche di cambiamento dal contesto globale `SystemContext`, aggiornando la visualizzazione del menu di pianificazione se necessario.
 
 **motivazione:**
 - Fornisce un’interfaccia per la personalizzazione delle impostazioni di UI.
@@ -181,6 +182,7 @@ La classe `WashControlMenu` gestisce l’interfaccia utente dedicata al controll
 - `inviaComandoPausa()`: invia il comando di pausa tramite il controller `WashControlController.onPausaLavaggio()`.
 - `inviaComandoRiprendi()`: invia il comando di ripresa tramite il controller `WashControlController.onRiprendiLavaggio()`.
 - `inviaComandoAnnulla()`: invia il comando di annullamento tramite il controller `WashControlController.onAnnullaLavaggio()`.
+- `update(e: Event)`: gestisce le notifiche di cambiamento dal contesto globale `SystemContext`, aggiornando la visualizzazione del menu di pianificazione se necessario.
 
 **motivazione:**
 - Implementa la view del pattern MVC, separando la presentazione dalla logica di controllo.
@@ -301,6 +303,7 @@ La classe `WashPlanningMenu` gestisce l’interfaccia utente per la pianificazio
 - `render()`: visualizza il menu di pianificazione (qualsiasi sia la tecnologia UI utilizzata per implementare la GUI), mostrando il catalogo dei piani di lavaggio e i campi per la selezione della data/ora.
     - Adatta la visualizzazione in base alle impostazioni correnti da `SystemContext` (come `UIConfiguration` e `hasUnreadNotifications`)
 - `submit()`: invia la richiesta di pianificazione al controller tramite `controller.onPianificaLavaggio(selectedPiano, dataOra)`.
+- `update(e: Event)`: gestisce le notifiche di cambiamento dal contesto globale `SystemContext`, aggiornando la visualizzazione del menu di pianificazione se necessario.
 
 **motivazione:**
 - Implementa la view del pattern MVC, separando la presentazione dalla logica di controllo.
@@ -374,6 +377,7 @@ La classe `DiagnosticMenu` gestisce l’interfaccia utente dedicata alle operazi
     - (qualsiasi sia la tecnologia UI utilizzata per implementare la GUI)
     - Adatta la visualizzazione in base alle impostazioni correnti da `SystemContext` (come `UIConfiguration` e `hasUnreadNotifications`)
 - `startDiagnostica()`: invia la richiesta di diagnostica al controller tramite `controller.onStartDiagnostica(sessionId)` dove `sessionId` è fornito dalla `UIConfiguration.sessionId`.
+- `update(e: Event)`: gestisce le notifiche di cambiamento dal contesto globale `SystemContext`, aggiornando la visualizzazione del menu di pianificazione se necessario.
 
 **motivazione:**
 - Implementa la view del pattern MVC, separando la presentazione dalla logica di controllo e gestione della diagnostica.
