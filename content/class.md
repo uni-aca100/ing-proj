@@ -592,14 +592,13 @@ class Notification is
 
 **Classe NotificationService**
 ```
-class NotificationService I
+class NotificationService is
     // Attributi
     notifications: List<Notification> // notifiche disponibili
     remote: RemoteControlManager
     global: SystemContext // per notificare la presenza di nuove notifiche
 
     // Metodi
-    push(tipo: string, messaggio: string) // crea e invia notifiche, chiama remote.broadcast()
     get(id: string): Notification
     getAll(): List<Notification>
     delete(id: string)
