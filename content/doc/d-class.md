@@ -1,12 +1,45 @@
+### classe SystemContext
+
+**Ruolo e Responsabilità:**
+La classe `SystemContext` rappresenta il contesto globale dell'applicazione, mantenendo le configurazioni, stati e le informazioni condivise tra i vari componenti. Implementa il **pattern Singleton** per garantire che ci sia un'unica istanza accessibile da tutte le parti dell'applicazione.
+Inoltre è conforme al pattern **Observer** per permettere ad altre classi (es. view, menu) di registrarsi come osservatori ed essere avvertite quando lo stato globale cambia (es. modifica delle preferenze utente).
+
+**Collaborazioni:**
+- Contiene le configurazioni UI tramite `UIConfiguration`.
+- Utilizzata `Event` per fornire informazioni sui cambiamenti del contesto (es. modifica delle preferenze utente).
+- Utilizzata da tutte le view per accedere alla Configurazione UI globale tramite `UIConfiguration` utilizzata nel rendering/presentazione.
+- Il `NotificationService` interagisce con `SystemContext` per indicare la presenza di notifiche non lette.
+- Utilizzata dal `LoginForm` dopo una richiesta di login che ha avuto successo per aggiornare la proprietà `sessionId`.
+
+**Principali attributi:**
+- `sessionId`: identificatore della sessione utente corrente (per la lavatrice, non per l'app mobile), utilizzata per autenticare le richieste, il valore è null altrimenti
+- `config` (`UIConfiguration`): istanza della configurazione UI globale
+- `observers` (`List<Observer>`): lista degli osservatori registrati per le notifiche di cambiamento del contesto
+- `hasUnreadNotifications`: flag per indicare la presenza di notifiche non lette, permette di mostrare un indicatore nell'interfaccia utente
+
+**Principali metodi:**
+- `getInstance()`: restituisce l’istanza singleton
+- `notifyObservers()`: notifica tutti gli osservatori registrati di un cambiamento nel contesto globale
+    - richiama il metodo `update(event: Event)` di ogni osservatore registrato fornendo l'oggetto `Event` con i dettagli del cambiamento
+    - `Event`: oggetto evento contenente informazioni sul cambiamento, es. con attributi come `type="UIConfChange"` e `data={fontSize: "large", contrast: "high"}` per indicare che la configurazione UI è cambiata
+- `register(o: Observer)`: aggiunge un nuovo osservatore alla lista `observers`
+- `unregister(o: Observer)`: rimuove un osservatore esistente dalla lista `observers`
+- Getter/setter per `sessionId`, `hasUnreadNotifications` e `config`, con i setter che invocano `notifyObservers()` per informare gli osservatori delle modifiche
+
+**motivazione:**
+- Centralizza lo stato e le configurazioni globali dell'applicazione, facilitando l'accesso e la gestione condivisa.
+- Permette una comunicazione efficiente tra componenti tramite il pattern Observer, riducendo il coupling diretto e migliorando la manutenibilità del codice.
+- Facilita l'implementazione di funzionalità reattive nell'interfaccia utente, poiché le view possono aggiornarsi automaticamente in risposta ai cambiamenti nel contesto.
+
+---
+
 ### Classe UIConfiguration
 
 **Ruolo e Responsabilità:**
-La classe `UIConfiguration` rappresenta la configurazione globale dell’interfaccia utente della lavatrice intelligente. Implementa il **pattern Singleton** per garantire che la configurazione sia unica e accessibile da tutte le componenti della UI e dei controller. Permette di personalizzare parametri come tema (dark/light), dimensione e tipo di font, contrasto, lingua, ecc.
+La classe `UIConfiguration` rappresenta la configurazione globale dell’interfaccia utente della lavatrice intelligente. viene esposta e mantenuta una configurazione tramite `SystemContext` per garantire che la configurazione sia unica e accessibile da tutte le componenti della UI. Permette di personalizzare parametri come tema (dark/light), dimensione e tipo di font, contrasto, lingua, ecc.
 
 **Collaborazioni:**
-- Utilizzata da tutte le view/menu del Presentation Layer per il rendering.
-- Modificata tramite `UIConfigurationMenu` e `UIConfigurationController`.
-- utilizzata dal controller `LoginForm` per aggiornare la proprietà `sessionId` quando l'utente effettua il login.
+- Utilizzata da tutte le view/menu del Presentation Layer indirettamente tramite `SystemContext` per il rendering
 
 **Principali attributi:**
 - `instance`: istanza del singleton
@@ -16,16 +49,12 @@ La classe `UIConfiguration` rappresenta la configurazione globale dell’interfa
 - `fontFamily`: tipo di font
 - `language`: lingua dell’interfaccia
 - `largeText`: dimensione del testo (grande/piccolo)
-- `sessionId`: la corrente sessione di authentication della lavatrice (non quella remota), utilizzata come configurazione globale, il valore è null altrimenti
 
 **Principali metodi:**
 - `getInstance()`: restituisce l’istanza singleton
 - `resetToDefaults()`: ripristina i valori di default per ogni parametro
 - Getter/setter per ogni parametro
 
-**motivazione:**
-- Centralizza la gestione della personalizzazione e dell’accessibilità.
-- Supporta la persistenza per utente o sistema (salvataggio delle preferenze in memoria).
 
 ---
 
@@ -33,17 +62,18 @@ La classe `UIConfiguration` rappresenta la configurazione globale dell’interfa
 
 **Ruolo e Responsabilità:**
 La classe `UIConfigurationMenu` gestisce l’interfaccia utente per la configurazione delle impostazioni della lavatrice intelligente. Permette agli utenti di modificare le preferenze di UI attraverso un menu dedicato.
+**Implementa l'interfaccia Observer** dell'Observer Pattern per ricevere eventi quando il contesto globale (`SystemContext` e indirettamente `UIConfiguration`) cambiano.
 
 **Collaborazioni:**
-- Interagisce con `UIConfiguration` per il reperimento delle impostazioni correnti.
+- Interagisce con  `SystemContext` per il reperimento delle impostazioni correnti (sia stato notifiche che la `UIConfiguration` corrente).
 - Interagisce con `UIConfigurationController` per la gestione delle modifiche.
 
 **Principali attributi:**
-- `uiConfig`: riferimento all’istanza di `UIConfiguration`
+- `ObservableCtx`: (`SystemContext`): riferimento al contesto di sistema per accedere alla configurazione UI globale e lo stato delle notifiche
 - `options:`: opzioni disponibili nel menu di configurazione (key:value) per la modifica/interrogazione delle impostazioni
 
 **Principali metodi:**
-- `render()`: visualizza il menu di configurazione (qualsiasi sia la tecnologia UI utilizzata per implementare la GUI)
+- `render()`: visualizza il menu di configurazione (qualsiasi sia la tecnologia UI utilizzata per implementare la GUI), recuperando le impostazioni correnti da `SystemContext` (come `UIConfiguration` e `hasUnreadNotifications`)
 - `saveConfig()`: applica le modifiche effettuate dall’utente (presenti in `options`), richiamando i metodi di `UIConfigurationController` come `onSaveConfig(options: map<string, string>)`
 - `resetToDefaults()`: ripristina le impostazioni di default, richiamando `UIConfiguration.resetToDefaults()`
 
@@ -54,19 +84,19 @@ La classe `UIConfigurationMenu` gestisce l’interfaccia utente per la configura
 
 ### Classe UIConfigurationController
 **Ruolo e Responsabilità:**
-La classe `UIConfigurationController` funge da intermediario tra il menu di configurazione (`UIConfigurationMenu`, `CommandDispatcher`) e la gestione effettiva delle impostazioni (`UIConfiguration`) come descritto dal Model-View-Controller (MVC) pattern. Gestisce la logica di validazione e l'interazione con l'application layer per l'applicazione delle modifiche alle impostazioni dell’interfaccia utente.
+La classe `UIConfigurationController` funge da intermediario tra il menu di configurazione (`UIConfigurationMenu`, `CommandDispatcher`) e la gestione effettiva delle impostazioni (`UIConfiguration` tramite `SystemContext`) come descritto dal Model-View-Controller (MVC) pattern. Gestisce la logica di validazione e l'interazione con l'application layer per l'applicazione delle modifiche alle impostazioni dell’interfaccia utente.
 
 **Collaborazioni:**
-- Interagisce con `UIConfiguration` per il reperimento delle impostazioni correnti e per l'applicazione delle modifiche.
+- Interagisce con `UIConfiguration` tramite `SystemContext` per il reperimento delle impostazioni correnti e per l'applicazione delle modifiche.
 - Interagisce con `UIConfigurationMenu` il quale fornisce un'interfaccia per la visualizzazione e l'interazione con l'utente.
-- Interagisce con il `CommandDispatcher` per ricevere commandi di modifica delle impostazioni.
+- Interagisce con il `CommandDispatcher` per ricevere commandi vocali/remoti di modifica delle impostazioni.
 
 **Principali attributi:**
-- `confService`: riferimento all’istanza di `UIConfiguration` che gestisce le impostazioni dell'interfaccia utente.
+- `ctx`: riferimento all’istanza di `SystemContext` che gestisce le impostazioni dell'interfaccia utente tramite `UIConfiguration`.
 
 **Principali metodi:**
-- `onSaveConfig(options: map<string, string>)`: gestisce il salvataggio delle modifiche alle impostazioni, validandole e applicandole tramite `UIConfiguration` (via i setter dei singoli attributi). le `options` contengono le nuove impostazioni da applicare.
-- `onResetToDefaults()`: gestisce il ripristino delle impostazioni di default, richiamando `UIConfiguration.resetToDefaults()`.
+- `onSaveConfig(options: map<string, string>)`: gestisce il salvataggio delle modifiche alle impostazioni, validandole e applicandole tramite `SystemContext` e `UIConfiguration` (via i setter dei singoli attributi). le `options` contengono le nuove impostazioni da applicare.
+- `onResetToDefaults()`: gestisce il ripristino delle impostazioni di default, richiamando `UIConfiguration.resetToDefaults()` tramite `SystemContext.resetUIConf()`.
 
 **motivazione:**
 - Controller in linea con il pattern MVC. permette di separare la logica di gestione delle impostazioni dalla loro rappresentazione e interfaccia utente.
@@ -135,6 +165,7 @@ La classe `WashControlController` è il controller del MVC pattern, l'intermedia
 
 **Ruolo e Responsabilità:**
 La classe `WashControlMenu` gestisce l’interfaccia utente dedicata al controllo del ciclo di lavaggio. Permette all’utente di inviare comandi (pausa, riprendi, annulla) e di visualizzare lo stato di avanzamento del ciclo.
+**Implementa l'interfaccia Observer** dell'Observer Pattern per ricevere eventi quando il contesto globale (`SystemContext` e indirettamente `UIConfiguration`) cambiano.
 
 **Collaborazioni:**
 - Interagisce con `WashControlController` per inviare comandi e ricevere aggiornamenti sullo stato del ciclo.
@@ -142,10 +173,11 @@ La classe `WashControlMenu` gestisce l’interfaccia utente dedicata al controll
 
 **Principali attributi:**
 - `controller`: riferimento al `WashControlController` che gestisce l'interazione con il Application Layer per la gestione del ciclo di lavaggio.
-- `conf`: riferimento alla configurazione UI globale (`UIConfiguration`) per il reperimento delle informazioni necessarie al rendering/accessibilità.
+- `ObservableCtx`: riferimento alla configurazione UI globale (`SystemContext`) per il reperimento delle informazioni necessarie al rendering/accessibilità.
 
 **Principali metodi:**
 - `render()`: implementa la visualizzazione dell’interfaccia di controllo (qualsiasi sia la tecnologia UI utilizzata per implementare la GUI), richiama i metodi `onGetTaskProgress()` e `onGetState()` del controller `WashControlController` per aggiornare la visualizzazione dell'avanzamento e dello stato del ciclo, ecc.
+    - Adatta la visualizzazione in base alle impostazioni correnti da `SystemContext` (come `UIConfiguration` e `hasUnreadNotifications`)
 - `inviaComandoPausa()`: invia il comando di pausa tramite il controller `WashControlController.onPausaLavaggio()`.
 - `inviaComandoRiprendi()`: invia il comando di ripresa tramite il controller `WashControlController.onRiprendiLavaggio()`.
 - `inviaComandoAnnulla()`: invia il comando di annullamento tramite il controller `WashControlController.onAnnullaLavaggio()`.
@@ -253,6 +285,7 @@ La classe `WashPlanningController` funge da intermediario tra il menu di pianifi
 ### Classe WashPlanningMenu
 **Ruolo e Responsabilità:**
 La classe `WashPlanningMenu` gestisce l’interfaccia utente per la pianificazione dei cicli di lavaggio della lavatrice intelligente. Permette all’utente di selezionare un piano di lavaggio dal catalogo disponibile e di specificare la data/ora per l’esecuzione del ciclo.
+**Implementa l'interfaccia Observer** dell'Observer Pattern per ricevere eventi quando il contesto globale (`SystemContext` e indirettamente `UIConfiguration`) cambiano.
 
 **Collaborazioni:**
 - Interagisce con `WashPlanningController` per ottenere il catalogo dei piani di lavaggio e per inviare le richieste di pianificazione.
@@ -262,10 +295,11 @@ La classe `WashPlanningMenu` gestisce l’interfaccia utente per la pianificazio
 - `controller`: riferimento al `WashPlanningController` che gestisce la logica di pianificazione e restituisce i piani di lavaggio disponibili.
 - `selectedPiano` (`PianoLavaggio`) selezionato dall’utente per la pianificazione.
 - `dataOra`: data e ora selezionata dall’utente per l’esecuzione del ciclo di lavaggio.
-- `conf` (`UIConfiguration`) riferimento alla configurazione UI globale per il rendering/accessibilità.
+- `ObservableCtx` (`SystemContext`) riferimento al contesto globale per il rendering/accessibilità.
 
 **Principali metodi:**
 - `render()`: visualizza il menu di pianificazione (qualsiasi sia la tecnologia UI utilizzata per implementare la GUI), mostrando il catalogo dei piani di lavaggio e i campi per la selezione della data/ora.
+    - Adatta la visualizzazione in base alle impostazioni correnti da `SystemContext` (come `UIConfiguration` e `hasUnreadNotifications`)
 - `submit()`: invia la richiesta di pianificazione al controller tramite `controller.onPianificaLavaggio(selectedPiano, dataOra)`.
 
 **motivazione:**
@@ -325,6 +359,7 @@ La classe `DiagnosticController` è il controller del Presentation Layer dedicat
 
 **Ruolo e Responsabilità:**
 La classe `DiagnosticMenu` gestisce l’interfaccia utente dedicata alle operazioni di diagnostica della lavatrice intelligente. Permette all’utente di avviare la procedura di diagnostica, visualizzare lo stato e i risultati dei test.
+**Implementa l'interfaccia Observer** dell'Observer Pattern per ricevere eventi quando il contesto globale (`SystemContext` e indirettamente `UIConfiguration`) cambiano.
 
 **Collaborazioni:**
 - Interagisce con `DiagnosticController` per avviare la diagnostica e ottenere i report.
@@ -337,6 +372,7 @@ La classe `DiagnosticMenu` gestisce l’interfaccia utente dedicata alle operazi
 **Principali metodi:**
 - `render()`: visualizza il menu di diagnostica e lo stato attuale (ad esempio, pulsante per avviare la diagnostica, area per visualizzare il report).
     - (qualsiasi sia la tecnologia UI utilizzata per implementare la GUI)
+    - Adatta la visualizzazione in base alle impostazioni correnti da `SystemContext` (come `UIConfiguration` e `hasUnreadNotifications`)
 - `startDiagnostica()`: invia la richiesta di diagnostica al controller tramite `controller.onStartDiagnostica(sessionId)` dove `sessionId` è fornito dalla `UIConfiguration.sessionId`.
 
 **motivazione:**

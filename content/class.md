@@ -4,16 +4,17 @@
 
 **Classe WashPlanningForm**
 ```
-class WashPlanningForm is
+class WashPlanningForm implements Observer is
     // Attributi
     selectedPiano: PianoLavaggio
     dataOra: DateTime // data/ora pianificazione
     controller: WashPlanningController // riferimento al controller
-    conf: UIConfiguration // for the rendering config
+    ObservableCtx: SystemContext // for the rendering config
 
     // Metodi
     submit()  // chiama controller.onPianificaLavaggio(selectedPiano, dataOra)
     render()
+    update(e: Event)
 ```
 // Descrizione: Form/view del Presentation Layer per la pianificazione di un ciclo (rappresenta la UI per la raccolta dei dati di pianificazione dal’utente). Raccoglie i dati dall’utente e, al submit, invoca il metodo onPianificaLavaggio del controller passando i parametri inseriti.
 
@@ -31,16 +32,17 @@ class WashPlanningController is
 
 **Classe WashControlMenu**
 ```
-class WashControlMenu is
+class WashControlMenu implements Observer is
     // Attributi
     controller: WashControlController // riferimento al controller
-    conf: UIConfiguration // for the rendering config
+    ObservableCtx: SystemContext // for the rendering config
 
     // Metodi
     render() // render the interface and call controller.onGetTaskProgress()/getTaskProgress() etc. at regular intervals
     inviaComandoPausa() // chiama eventualmente controller.onPausaLavaggio()
     inviaComandoRiprendi() // chiama eventualmente controller.onriPrendiLavaggio()
     inviaComandoAnnulla() // chiama eventualmente controller.onPausaLavaggio()
+    update(e: Event)
 ```
 // Descrizione: Menu/view del Presentation Layer che offre all’utente i comandi di controllo del lavaggio (pausa, riprendi, annulla) e visualizza lo stato corrente del lavaggio. Interagisce con WashControlController per inoltrare i comandi.
 
@@ -74,18 +76,19 @@ class CommandDispatcher is
 
 **Classe LoginForm**
 ```
-class LoginForm is
+class LoginForm implements Observer is
     // Attributi
     username: string
     password: string
-    controller: AuthController // riferimento al controller 
-    conf: UIConfiguration // for the rendering config
+    controller: AuthController // riferimento al controller
+    ObservableCtx: SystemContext // for the rendering config
 
     // Metodi
-    submitLogin() // chiama controller.onLogin(username, password) e utilizza il risultante sessionId per aggiornare la sessione in UIConfiguration
+    submitLogin() // chiama controller.onLogin(username, password) e utilizza il risultante sessionId per aggiornare la sessione in SystemContext
     submitLogout() // chiama controller.onLogout()
     recoverPassword(username: string)
     render()
+    update(e: Event)
 ```
 // Descrizione: Form/view del Presentation Layer per la gestione dell’autenticazione. Raccoglie le credenziali dall’utente e, al submit, invoca i metodi di login/logout del controller AuthController. Gestisce la visualizzazione di messaggi di errore o conferma.
 
@@ -105,12 +108,12 @@ class AuthController is
 
 **Classe IoTDeviceMenu**
 ```
-class IoTDeviceForm is
+class IoTDeviceForm implements Observer is
     // Attributi
     devices: List<IDevice> // elenco dispositivi trovati
     selected: Device // dispositivo selezionato
     controller: DeviceController // riferimento al controller
-    conf: UIConfiguration // for the rendering config
+    ObservableCtx: SystemContext // for the rendering config
 
     // Metodi
     scanDevices() // chiama controller.onScanDevices() e ottiene i dispositivi disponibili
@@ -120,6 +123,7 @@ class IoTDeviceForm is
     turnOffOptimization()
     turnOnOptimization()
     render()
+    update(e: Event)
 ```
 // Descrizione: menu del Presentation Layer per la gestione dei dispositivi IoT. Permette all’utente di avviare la scansione, selezionare un dispositivo, associarlo/dissociarlo e visualizzare lo stato.
 
@@ -140,15 +144,16 @@ class IoTDeviceController is
 
 **Classe VoiceCommandMenu**
 ```
-class VoiceCommandMenu is
+class VoiceCommandMenu implements Observer is
     // Attributi
     controller: VoiceCommandController // riferimento al controller
-    conf: UIConfiguration // for the rendering config
+    ObservableCtx: SystemContext // for the rendering config
 
     // Metodi
     activateVoiceCommands() // chiama controller.onActivateVoiceCommands(system.sessionId)
     disableVoiceCommands() // chiama controller.onDisableVoiceCommands()
     render()
+    update(e: Event)
 ```
 // Descrizione: Menu/view del Presentation Layer che offre all’utente la possibilità di attivare o disattivare i comandi vocali tramite la UI. Interagisce con VoiceCommandController per inoltrare le richieste e visualizzare lo stato corrente.
 
@@ -166,14 +171,15 @@ class VoiceCommandController is
 
 **Classe ResetMenu**
 ```
-class ResetMenu is
+class ResetMenu implements Observer is
     // Attributi
     controller: ResetController // riferimento al controller
-    conf: UIConfiguration // for the rendering config
+    ObservableCtx: SystemContext // for the rendering config
 
     // Metodi
     render()
     reset() // chiama controller.onResetLavatrice(sessionId)
+    update(e:Event)
 ```
 // Descrizione: View/menu del Presentation Layer che offre all’utente la possibilità di avviare la procedura di reset, visualizza lo stato e l’esito dell’operazione.
 
@@ -190,15 +196,16 @@ class ResetController is
 
 **Classe DiagnosticMenu**
 ```
-class DiagnosticMenu is
+class DiagnosticMenu implements Observer is
     // Attributi
     controller: DiagnosticController // riferimento al controller
-    conf: UIConfiguration // for the rendering config
+    ObservableCtx: SystemContext // for the rendering config
     lastReport: DiagnosticReport // ultimo report diagnostico visualizzato
 
     // Metodi
     render()
     startDiagnostica() // chiama controller.onStartDiagnostica(sessionId)
+    update(e: Event)
 ```
 // Descrizione: View/menu del Presentation Layer che permette all’utente di avviare la diagnostica e visualizzare i risultati.
 
@@ -216,11 +223,11 @@ class DiagnosticController is
 
 **Classe NotificationMenu**
 ```
-class NotificationMenu is
+class NotificationMenu implements Observer is
     // Attributi
     controller: NotificationController // riferimento al controller
     Notifications: List<Notification> // lista notifiche da visualizzare
-    conf: UIConfiguration // for the rendering config
+    conf: SystemContext // for the rendering config
 
     // Metodi
     render()
@@ -228,6 +235,7 @@ class NotificationMenu is
     markAsRead(id: string) // chiama controller.onMarkAsRead(id)
     delete(id: string) // chiama controller.onDeleteNotification(id)
     clearAll()
+    update(e: Event)
 ```
 // Descrizione: View/menu del Presentation Layer che mostra la lista delle notifiche all’utente, permette di segnarle come lette o eliminarle. Interagisce con NotificationController per tutte le operazioni.
 
@@ -248,16 +256,17 @@ class NotificationController is
 
 **Classe UIConfigurationMenu**
 ```
-class UIConfigurationMenu is
+class UIConfigurationMenu implements Observer is
     // Attributi
     controller: UIConfigurationController // riferimento al controller
-    conf: UIConfiguration // configurazione corrente (singleton)
+    ObservableCtx: SystemContext // configurazione corrente (singleton)
     options: map<string, string>
 
     // Metodi
     render() // mostra le opzioni di personalizzazione
     saveConfig() // chiama controller.onSaveConfig(options)
     resetToDefaults() // chiama controller.onResetConfig()
+    update(e: Event)
 ```
 // Descrizione: Menu/view del Presentation Layer che permette all’utente di personalizzare la configurazione UI (tema, font, contrasto, ecc.) salvare o resettare ai valori di default. Interagisce con UIConfigurationController per tutte le operazioni.
 
@@ -265,13 +274,13 @@ class UIConfigurationMenu is
 ```
 class UIConfigurationController is
     // Attributi
-    confService: UIConfiguration // dipendenza verso Application Layer
+    ctx: SystemContext // dipendenza verso Application Layer
 
     // Metodi
     onSaveConfig(options: map<string, string>) // valida e aggiorna la configurazione
     onReset() // resetta ai valori di default
 ```
-// Descrizione: Controller del Presentation Layer che riceve le richieste di personalizzazione dalla UI, valida i dati, aggiorna il singleton UIConfiguration
+// Descrizione: Controller del Presentation Layer che riceve le richieste di personalizzazione dalla UI, valida i dati, aggiorna il UIConfiguration del singleton SystemContext
 
 ---
 
@@ -280,10 +289,7 @@ class UIConfigurationController is
 **Classe UIConfiguration**
 ```
 class UIConfiguration is
-    // utilizza il sigleton pattern
-    static instance: UIConfiguration
     // Attributi
-    sessionId: string
     mode: string // dark | light
     fontSize: int // es. 12..36
     contrast: string // normal | high
@@ -295,10 +301,46 @@ class UIConfiguration is
     // Metodi
     // setter and getter impliciti per ogni parametro
     static resetToDefaults()
-    static getInstance(): UIConfiguration
 ```
-// Descrizione: Oggetto (singleton) che rappresenta la configurazione dell'interfaccia (tema, dimensione font, contrasto, lingua, accessibilità).
+// Descrizione: rappresenta la configurazione dell'interfaccia (tema, dimensione font, contrasto, lingua, accessibilità).
 
+**classe SystemContext**
+```
+class SystemContext is
+    // utilizza il sigleton pattern
+    static instance: SystemContext
+    // Attributi
+    config: UIConfiguration
+    observers: List<Observer>
+    sessionId: string
+    hasUnreadNotifications: bool
+
+    // Metodi
+    static getInstance(): SystemContext
+    register(o: Observer)
+    unregister(o: Observer)
+    notifyObservers()
+    resetUIConf()
+```
+
+// Descrizione: Oggetto (singleton) che rappresenta il contesto globale del sistema, inclusa la sessione utente corrente e la configurazione UI attiva.
+
+**Interface Observer**
+```
+interface Observer is
+    // Metodi
+    update(event: Event)
+```
+// Descrizione: Interfaccia per gli observer che vogliono essere notificati di eventi specifici nel sistema.
+
+**class Event**
+```
+class Event is
+    // Attributi
+    type: string // tipo di evento
+    data: map<string, any> // dati associati all'evento
+```
+// Descrizione: Rappresenta un evento generico nel sistema, con un tipo e dati associati.
 
 **Classe servizioPianificazioneCicli**
 ```
@@ -550,10 +592,11 @@ class Notification is
 
 **Classe NotificationService**
 ```
-class NotificationService is
+class NotificationService I
     // Attributi
     notifications: List<Notification> // notifiche disponibili
     remote: RemoteControlManager
+    global: SystemContext // per notificare la presenza di nuove notifiche
 
     // Metodi
     push(tipo: string, messaggio: string) // crea e invia notifiche, chiama remote.broadcast()
