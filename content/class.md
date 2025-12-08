@@ -253,9 +253,9 @@ class NotificationController is
 ```
 // Descrizione: Controller del Presentation Layer che gestisce la logica di presentazione delle notifiche. Riceve le richieste dalla view/menu e le inoltra a NotificationService.
 
-**Classe UIConfigurationMenu**
+**Classe ConfigurationMenu**
 ```
-class UIConfigurationMenu implements Observer is
+class ConfigurationMenu implements Observer is
     // Attributi
     controller: UIConfigurationController // riferimento al controller
     ObservableCtx: SystemContext // configurazione corrente (singleton)
@@ -265,18 +265,22 @@ class UIConfigurationMenu implements Observer is
     render() // mostra le opzioni di personalizzazione
     saveConfig() // chiama controller.onSaveConfig(options)
     resetToDefaults() // chiama controller.onResetConfig()
+    enableVoiceCommands() // chiama controller.onEnableVoiceCommands(sessionId)
+    disableVoiceCommands() // chiama controller.onDisableVoiceCommands(sessionId)
     update(e: Event)
 ```
 // Descrizione: Menu/view del Presentation Layer che permette all’utente di personalizzare la configurazione UI (tema, font, contrasto, ecc.) salvare o resettare ai valori di default. Interagisce con UIConfigurationController per tutte le operazioni.
 
-**Classe UIConfigurationController**
+**Classe ConfigurationController**
 ```
-class UIConfigurationController is
+class ConfigurationController is
     // Attributi
     ctx: SystemContext // dipendenza verso Application Layer
 
     // Metodi
-    onSaveConfig(options: map<string, string>) // valida e aggiorna la configurazione
+    onSaveConfig(options: map<string, string>, sessionId: string) // valida e aggiorna la configurazione
+    onEnableVoiceCommands(sessionId: string) // abilita i comandi vocali nel SystemContext
+    onDisableVoiceCommands(sessionId: string) // disabilita i comandi vocali nel SystemContext
     onReset() // resetta ai valori di default
 ```
 // Descrizione: Controller del Presentation Layer che riceve le richieste di personalizzazione dalla UI, valida i dati, aggiorna il UIConfiguration del singleton SystemContext
@@ -289,13 +293,11 @@ class UIConfigurationController is
 ```
 class UIConfiguration is
     // Attributi
-    mode: string // dark | light
+    darkMode: bool // dark | light
     fontSize: int // es. 12..36
-    contrast: string // normal | high
-    fontFamily: string
-    language: string
-    largeText: bool
-    // ...etc
+    highContrast: bool // normal | high
+    highReadabilityFont: bool
+    colorBlindMode: bool
 
     // Metodi
     // setter and getter impliciti per ogni parametro
@@ -309,11 +311,13 @@ class SystemContext is
     // utilizza il sigleton pattern
     static instance: SystemContext
     // Attributi
+    auth: AuthenticationService
     config: UIConfiguration
     storage: StorageInterface
     observers: List<Observer>
     sessionId: string
     hasUnreadNotifications: bool
+    voiceCommandsEnabled: bool
 
     // Metodi
     static getInstance(): SystemContext
@@ -321,7 +325,8 @@ class SystemContext is
     unregister(o: Observer)
     notifyObservers()
     resetUIConf()
-    saveInStorage() 
+    saveInStorage()
+    // setter and getter impliciti con parametro sessionId
 ```
 
 // Descrizione: Oggetto (singleton) che rappresenta il contesto globale del sistema, inclusa la sessione utente corrente e la configurazione UI attiva.
@@ -429,17 +434,11 @@ class VoiceCommandInterpreter is
     // Attributi
     dispatcher: CommandDispatcher // riferimento al dispatcher del Presentation Layer
     authService: AuthenticationService // dipendenza per verifica autenticazione
+    ctx: SystemContext // riferimento al contesto di sistema
 
     // Metodi
-    interpretaComandoVocale(comando: string) // dispatcher.dispatch()
+    interpretaComandoVocale(comando: string) // dispatcher.dispatch() only if ctx.voiceCommandsEnabled=true and authService.verifySession(system.sessionId)=true
     onVoiceSignal(comando: string)
-    disableVoiceCommands()
-    activateVoiceCommands(sessionId: string)
-            // verifica autenticazione tramite authService
-        if authService.verifySession(sessionId) then
-            // attiva comandi vocali
-        else
-            // operazione negata: utente/dispositivo non autenticato
 ```
 // Descrizione: Interpreta il segnale vocale ricevuto dal Hardware Layer tramite VoiceSignalReceiver, analizza il segnale e lo trasforma in una commando da inoltrare al Presentation Layer tramite il dispatcher. Ora verifica l'autenticazione prima di attivare i comandi vocali.
 

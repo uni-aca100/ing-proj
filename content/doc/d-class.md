@@ -17,6 +17,8 @@ Inoltre è conforme al pattern **Observer** per permettere ad altre classi (es. 
 - `observers` (`List<Observer>`): lista degli osservatori registrati per le notifiche di cambiamento del contesto
 - `hasUnreadNotifications`: flag per indicare la presenza di notifiche non lette, permette di mostrare un indicatore nell'interfaccia utente
 - `storage` (`IStorage`): interfaccia per l'accesso alla memoria di massa, utilizzata per salvare/caricare le configurazioni persistenti
+- `voiceCommandsEnabled`: flag per indicare se i comandi vocali sono abilitati
+- `auth` (`AuthenticationService`): riferimento al servizio di autenticazione esterno per la verifica delle credenziali utente quando procedono a modifiche
 
 **Principali metodi:**
 - `getInstance()`: restituisce l’istanza singleton
@@ -27,7 +29,7 @@ Inoltre è conforme al pattern **Observer** per permettere ad altre classi (es. 
 - `unregister(o: Observer)`: rimuove un osservatore esistente dalla lista `observers`
 - `saveInStorage()`: salva la configurazione/stato corrente (`UIConfiguration`, `sessionId`, `hasUnreadNotifications`) nella memoria di massa tramite l'interfaccia `IStorage.write(...)`, permettendo la persistenza delle impostazioni utente
     - durante l'invocazione del Constructor di `SystemContext`, carica lo stato salvato (se presente) dalla memoria di massa per inizializzare gli attributi tramite `storage.read(...)`
-- Getter/setter per `sessionId`, `hasUnreadNotifications` e `config`, con i setter che invocano `notifyObservers()` per informare gli osservatori delle modifiche
+- Getter/setter per `sessionId`, `hasUnreadNotifications` e `config`, con i setter (con parametro sessionId per verificare l'autenticazione tramite `auth.verifySession(sessionId)`) che invocano `notifyObservers()` per informare gli osservatori delle modifiche
 
 **motivazione:**
 - Centralizza lo stato e le configurazioni globali dell'applicazione, facilitando l'accesso e la gestione condivisa.
@@ -61,15 +63,15 @@ La classe `UIConfiguration` rappresenta la configurazione globale dell’interfa
 
 ---
 
-### Classe UIConfigurationMenu
+### Classe ConfigurationMenu
 
 **Ruolo e Responsabilità:**
-La classe `UIConfigurationMenu` gestisce l’interfaccia utente per la configurazione delle impostazioni della lavatrice intelligente. Permette agli utenti di modificare le preferenze di UI attraverso un menu dedicato.
+La classe `ConfigurationMenu` gestisce l’interfaccia utente per la configurazione delle impostazioni della lavatrice intelligente. Permette agli utenti di modificare le preferenze di UI e comandi vocali attraverso un menu dedicato.
 **Implementa l'interfaccia Observer** dell'Observer Pattern per ricevere eventi quando il contesto globale (`SystemContext` e indirettamente `UIConfiguration`) cambiano.
 
 **Collaborazioni:**
-- Interagisce con  `SystemContext` per il reperimento delle impostazioni correnti (sia stato notifiche che la `UIConfiguration` corrente).
-- Interagisce con `UIConfigurationController` per la gestione delle modifiche.
+- Interagisce con  `SystemContext` per il reperimento delle impostazioni correnti (`unreadNotifications` e `UIConfiguration` corrente).
+- Interagisce con `ConfigurationController` per la gestione delle modifiche.
 
 **Principali attributi:**
 - `ObservableCtx`: (`SystemContext`): riferimento al contesto di sistema per accedere alla configurazione UI globale e lo stato delle notifiche
@@ -77,22 +79,23 @@ La classe `UIConfigurationMenu` gestisce l’interfaccia utente per la configura
 
 **Principali metodi:**
 - `render()`: visualizza il menu di configurazione (qualsiasi sia la tecnologia UI utilizzata per implementare la GUI), recuperando le impostazioni correnti da `SystemContext` (come `UIConfiguration` e `hasUnreadNotifications`)
-- `saveConfig()`: applica le modifiche effettuate dall’utente (presenti in `options`), richiamando i metodi di `UIConfigurationController` come `onSaveConfig(options: map<string, string>)`, callback richiamata quando l'utente clicca sul bottone salva della UI
+- `saveConfig()`: applica le modifiche effettuate dall’utente (presenti in `options`), richiamando i metodi di `ConfigurationController` come `onSaveConfig(options: map<string, string>)`, callback richiamata quando l'utente clicca sul bottone salva della UI
 - `resetToDefaults()`: ripristina le impostazioni di default, richiamando `UIConfiguration.resetToDefaults()`
 - `update(e: Event)`: gestisce le notifiche di cambiamento dal contesto globale `SystemContext`, aggiornando la visualizzazione del menu di pianificazione se necessario.
+- `onEnableVoiceCommands()`: abilita i comandi vocali nel `SystemContext`
+- `onDisableVoiceCommands()`: disabilita i comandi vocali nel `SystemContext`
 
 **motivazione:**
 - Fornisce un’interfaccia per la personalizzazione delle impostazioni di UI.
 
 ---
 
-### Classe UIConfigurationController
+### Classe ConfigurationController
 **Ruolo e Responsabilità:**
-La classe `UIConfigurationController` funge da intermediario tra il menu di configurazione (`UIConfigurationMenu`, `CommandDispatcher`) e la gestione effettiva delle impostazioni (`UIConfiguration` tramite `SystemContext`) come descritto dal Model-View-Controller (MVC) pattern. Gestisce la logica di validazione e l'interazione con l'application layer per l'applicazione delle modifiche alle impostazioni dell’interfaccia utente.
+La classe `ConfigurationController` funge da intermediario tra il menu di configurazione (`ConfigurationMenu`, `CommandDispatcher`) e la gestione effettiva delle impostazioni (`UIConfiguration` tramite `SystemContext`) come descritto dal Model-View-Controller (MVC) pattern. Gestisce la logica di validazione e l'interazione con l'application layer per l'applicazione delle modifiche alle impostazioni dell’interfaccia utente.
 
 **Collaborazioni:**
-- Interagisce con `UIConfiguration` tramite `SystemContext` per il reperimento delle impostazioni correnti e per l'applicazione delle modifiche.
-- Interagisce con `UIConfigurationMenu` il quale fornisce un'interfaccia per la visualizzazione e l'interazione con l'utente.
+- Interagisce con `ConfigurationMenu` il quale fornisce un'interfaccia per la visualizzazione delle opzioni e l'interazione con l'utente.
 - Interagisce con il `CommandDispatcher` per ricevere commandi vocali/remoti di modifica delle impostazioni.
 
 **Principali attributi:**
@@ -101,6 +104,8 @@ La classe `UIConfigurationController` funge da intermediario tra il menu di conf
 **Principali metodi:**
 - `onSaveConfig(options: map<string, string>)`: gestisce il salvataggio delle modifiche alle impostazioni, validandole e applicandole tramite `SystemContext` e `UIConfiguration` (via i setter dei singoli attributi). le `options` contengono le nuove impostazioni da applicare.
 - `onResetToDefaults()`: gestisce il ripristino delle impostazioni di default, richiamando `UIConfiguration.resetToDefaults()` tramite `SystemContext.resetUIConf()`.
+- `onEnableVoiceCommands(sessionId: string)`: abilita i comandi vocali nel `SystemContext` tramite l'attributo `voiceCommandsEnabled` via setter
+- `onDisableVoiceCommands(sessionId: string)`: disabilita i comandi vocali nel `SystemContext` tramite l'attributo `voiceCommandsEnabled` via setter
 
 **motivazione:**
 - Controller in linea con il pattern MVC. permette di separare la logica di gestione delle impostazioni dalla loro rappresentazione e interfaccia utente.
