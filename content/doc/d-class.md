@@ -77,7 +77,7 @@ La classe `UIConfigurationMenu` gestisce l’interfaccia utente per la configura
 
 **Principali metodi:**
 - `render()`: visualizza il menu di configurazione (qualsiasi sia la tecnologia UI utilizzata per implementare la GUI), recuperando le impostazioni correnti da `SystemContext` (come `UIConfiguration` e `hasUnreadNotifications`)
-- `saveConfig()`: applica le modifiche effettuate dall’utente (presenti in `options`), richiamando i metodi di `UIConfigurationController` come `onSaveConfig(options: map<string, string>)`
+- `saveConfig()`: applica le modifiche effettuate dall’utente (presenti in `options`), richiamando i metodi di `UIConfigurationController` come `onSaveConfig(options: map<string, string>)`, callback richiamata quando l'utente clicca sul bottone salva della UI
 - `resetToDefaults()`: ripristina le impostazioni di default, richiamando `UIConfiguration.resetToDefaults()`
 - `update(e: Event)`: gestisce le notifiche di cambiamento dal contesto globale `SystemContext`, aggiornando la visualizzazione del menu di pianificazione se necessario.
 
@@ -185,9 +185,9 @@ La classe `WashControlMenu` gestisce l’interfaccia utente dedicata al controll
 **Principali metodi:**
 - `render()`: implementa la visualizzazione dell’interfaccia di controllo (qualsiasi sia la tecnologia UI utilizzata per implementare la GUI), richiama i metodi `onGetTaskProgress()` e `onGetState()` del controller `WashControlController` per aggiornare la visualizzazione dell'avanzamento e dello stato del ciclo, ecc.
     - Adatta la visualizzazione in base alle impostazioni correnti da `SystemContext` (come `UIConfiguration` e `hasUnreadNotifications`)
-- `inviaComandoPausa()`: invia il comando di pausa tramite il controller `WashControlController.onPausaLavaggio()`.
-- `inviaComandoRiprendi()`: invia il comando di ripresa tramite il controller `WashControlController.onRiprendiLavaggio()`.
-- `inviaComandoAnnulla()`: invia il comando di annullamento tramite il controller `WashControlController.onAnnullaLavaggio()`.
+- `inviaComandoPausa()`: invia il comando di pausa tramite il controller, `WashControlController.onPausaLavaggio()`. Callback richiamata quando l'utente clicca sul bottone pausa della UI.
+- `inviaComandoRiprendi()`: invia il comando di ripresa tramite il controller `WashControlController.onRiprendiLavaggio()`. Callback richiamata quando l'utente clicca sul bottone riprendi della UI.
+- `inviaComandoAnnulla()`: invia il comando di annullamento tramite il controller `WashControlController.onAnnullaLavaggio()`. Callback richiamata quando l'utente clicca sul bottone annulla della UI.
 - `update(e: Event)`: gestisce le notifiche di cambiamento dal contesto globale `SystemContext`, aggiornando la visualizzazione del menu di pianificazione se necessario.
 
 **motivazione:**
@@ -314,7 +314,7 @@ La classe `WashPlanningMenu` gestisce l’interfaccia utente per la pianificazio
 **Principali metodi:**
 - `render()`: visualizza il menu di pianificazione (qualsiasi sia la tecnologia UI utilizzata per implementare la GUI), mostrando il catalogo dei piani di lavaggio e i campi per la selezione della data/ora.
     - Adatta la visualizzazione in base alle impostazioni correnti da `SystemContext` (come `UIConfiguration` e `hasUnreadNotifications`)
-- `submit()`: invia la richiesta di pianificazione al controller tramite `controller.onPianificaLavaggio(selectedPiano, dataOra)`.
+- `submit()`: invia la richiesta di pianificazione al controller tramite `controller.onPianificaLavaggio(selectedPiano, dataOra)`. Callback richiamata quando l'utente clicca sul bottone pianifica della UI.
 - `update(e: Event)`: gestisce le notifiche di cambiamento dal contesto globale `SystemContext`, aggiornando la visualizzazione del menu di pianificazione se necessario.
 
 **motivazione:**
@@ -391,7 +391,7 @@ La classe `DiagnosticMenu` gestisce l’interfaccia utente dedicata alle operazi
 - `render()`: visualizza il menu di diagnostica e lo stato attuale (ad esempio, pulsante per avviare la diagnostica, area per visualizzare il report).
     - (qualsiasi sia la tecnologia UI utilizzata per implementare la GUI)
     - Adatta la visualizzazione in base alle impostazioni correnti da `SystemContext` (come `UIConfiguration` e `hasUnreadNotifications`)
-- `startDiagnostica()`: invia la richiesta di diagnostica al controller tramite `controller.onStartDiagnostica(sessionId)` dove `sessionId` è fornito dalla `UIConfiguration.sessionId`.
+- `startDiagnostica()`: invia la richiesta di diagnostica al controller tramite `controller.onStartDiagnostica(sessionId)` dove `sessionId` è fornito dalla `UIConfiguration.sessionId`. Callback richiamata quando l'utente clicca sul bottone avvia diagnostica della UI.
 - `update(e: Event)`: gestisce le notifiche di cambiamento dal contesto globale `SystemContext`, aggiornando la visualizzazione del menu di pianificazione se necessario.
 
 **motivazione:**

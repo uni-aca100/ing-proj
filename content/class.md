@@ -651,6 +651,7 @@ interface ILavatriceHardware is
     chiudiValvolaAcqua()
     attivaCentrifuga()
     arrestaCentrifuga()
+    reset() // esegue il reset hardware
     // ...altri metodi per interagire con l'hardware...
 ```
 // Descrizione: Espone i comandi per il controllo diretto dell'hardware della lavatrice. Utilizzato da WashingManager.
