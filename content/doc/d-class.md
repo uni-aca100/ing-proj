@@ -17,7 +17,7 @@ Inoltre è conforme al pattern **Observer** per permettere ad altre classi (es. 
 - `observers` (`List<Observer>`): lista degli osservatori registrati per le notifiche di cambiamento del contesto
 - `hasUnreadNotifications`: flag per indicare la presenza di notifiche non lette, permette di mostrare un indicatore nell'interfaccia utente
 - `storage` (`IStorage`): interfaccia per l'accesso alla memoria di massa, utilizzata per salvare/caricare le configurazioni persistenti
-- `voiceCommandsEnabled`: flag per indicare se i comandi vocali sono abilitati
+- `voiceCommandsEnabled` (`bool`): flag per indicare se i comandi vocali sono abilitati
 - `auth` (`AuthenticationService`): riferimento al servizio di autenticazione esterno per la verifica delle credenziali utente quando procedono a modifiche
 
 **Principali metodi:**
@@ -48,12 +48,11 @@ La classe `UIConfiguration` rappresenta la configurazione globale dell’interfa
 
 **Principali attributi:**
 - `instance`: istanza del singleton
-- `mode`: tema dell’interfaccia (dark/light)
-- `fontSize`: dimensione del font
-- `contrast`: livello di contrasto (normal/high)
-- `fontFamily`: tipo di font
-- `language`: lingua dell’interfaccia
-- `largeText`: dimensione del testo (grande/piccolo)
+- `darkMode` (`bool`): tema dell’interfaccia (dark/light)
+- `fontSize` (`int`): dimensione del font
+- `highContrast` (`bool`): livello di contrasto (normal/high)
+- `highReadabilityFont` (`bool`): tipo di font
+- `colorBlindMode` (`bool`): modalità per daltonici
 
 **Principali metodi:**
 - `getInstance()`: restituisce l’istanza singleton
