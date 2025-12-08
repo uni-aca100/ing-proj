@@ -117,9 +117,8 @@ class IoTDeviceForm implements Observer is
 
     // Metodi
     scanDevices() // chiama controller.onScanDevices() e ottiene i dispositivi disponibili
-    selectDevice(device: Device) // seleziona dispositivo
-    associate() // chiama controller.onAssociateDevice(selectedDevice)
-    dissociate() // chiama controller.onDissociateDevice(selectedDevice)
+    associate() // chiama controller.onAssociateDevice(selectedDevice, sessionId)
+    dissociate() // chiama controller.onDissociateDevice(selectedDevice, sessionId)
     turnOffOptimization()
     turnOnOptimization()
     render()
@@ -135,8 +134,8 @@ class IoTDeviceController is
 
     // Metodi
     onScanDevices(): List<Device> // chiama iotService.discoverDevices()
-    onAssociateDevice(device: Device): bool // chiama iotService.associateDevice(device)
-    onDissociateDevice(device: Device): bool // chiama iotService.dissociateDevice(device)
+    onAssociateDevice(device: Device, sessionId: string): bool // chiama iotService.associateDevice(device, sessionId)
+    onDissociateDevice(device: Device, sessionId: string): bool // chiama iotService.dissociateDevice(device, sessionId)
     onTurnOffOptimization(): bool
     onTurnOnOptimization(): bool
 ```
@@ -485,13 +484,14 @@ class IoTIntegrationService is
     devices: List<Device> // dispositivi IoT associati
     washingManager: WashingManager // associazione per ottimizzazione
     NotificationService // to push notification when needed
+    auth: AuthenticationService // per autenticare i dispositivi IoT
     optimization: bool // attiva/disattiva
     storage: IStorage // per salvare/caricare le impostazioni di ottimizzazione e i dispositivi associati
 
     // Metodi
     discoverDevices(): List<Device>
-    associateDevice(device: Device): bool
-    dissociateDevice(device: Device): bool
+    associateDevice(device: Device, sessionId: string): bool
+    dissociateDevice(device: Device, sessionId: string): bool
     receiveData(device: Device): string
     processIoTData(iotData: string)
     turnOffOptimization()
