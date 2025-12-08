@@ -311,6 +311,7 @@ class SystemContext is
     static instance: SystemContext
     // Attributi
     config: UIConfiguration
+    storage: StorageInterface
     observers: List<Observer>
     sessionId: string
     hasUnreadNotifications: bool
@@ -321,6 +322,7 @@ class SystemContext is
     unregister(o: Observer)
     notifyObservers()
     resetUIConf()
+    saveInStorage() 
 ```
 
 // Descrizione: Oggetto (singleton) che rappresenta il contesto globale del sistema, inclusa la sessione utente corrente e la configurazione UI attiva.
@@ -349,10 +351,12 @@ class WashPlanningService  is
     scheduler: Scheduler // associazione/collaborazione
     notification: NotificationService // notifica il risultato della pianifica
     catalog: List<PianoLavaggio> // catalogo piani di lavaggio disponibili
+    storage: IStorage // per salvare/caricare le pianificazioni
 
     // Metodi
     pianificaLavaggio(piano: PianoLavaggio, dataOra: DateTime)
     getCatalog(): List<PianoLavaggio>
+    saveInStorage() // salva le pianificazioni nella memoria di massa
 ```
 // Descrizione: Application Service che espone le operazioni di pianificazione ciclo verso il Presentation Layer. Si occupa di validare i parametri ricevuti dal Presentation Layer, creare oggetti PianoLavaggio e Schedule, e aggiungere la pianificazione allo Scheduler.
 
@@ -362,11 +366,13 @@ class Scheduler
     // Attributi
     schedules: List<Schedule>
     manager: WashingManager // associazione/collaborazione
+    storage: StorageInterface // per salvare le pianificazioni
 
     // Metodi
     validaSchedule(sch: schedule);
     aggiungiSchedule(newShedule: schedule)
     onTick(currentTime: DateTime) // reazione allo scorrere del tempo chiamato dal Clock ad ogni
+    saveInStorage() // salva le pianificazioni nella memoria di massa
 ```
 // Descrizione: Si occupa della pianificazione e gestione temporale dei cicli di lavaggio. Mantiene la lista delle pianificazioni (Schedule), riceve eventi temporali (onTick) e, quando necessario, delega l'esecuzione dei cicli al WashingManager. Garantisce la separazione tra logica di scheduling e logica di esecuzione.
 onTock incova manager.avviaLavaggio(piano)
@@ -401,6 +407,7 @@ class WashingManager is
     piano: PianoLavaggio
     hardware: LavatriceHardwareInterface
     notification: NotificationService // to push notification when needed
+    storage: StorageInterface // per salvare lo stato del lavaggio in corso
 
     // Metodi
     avviaLavaggio(piano: PianoLavaggio)
@@ -412,6 +419,7 @@ class WashingManager is
     getState()
     optimizeCycle(iotData: string)
     getTaskProgress(): Int 0 to 100
+    saveInStorage() // salva lo stato corrente e il piano del lavaggio in corso
 ```
 // Descrizione: Gestisce l'esecuzione delle fasi del ciclo di lavaggio, interfacciandosi con l'Hardware Layer tramite LavatriceHardwareInterface. Riceve richieste da Scheduler/Schedule e invia comandi all'hardware. Gestisce feedback/eventi dall'hardware (fine fase, errori, ecc.).
 Inotre si comporta come Application Service che espone le operazioni di controllo del ciclo di lavaggio di lavaggio in corso (pausa, riprendi, annulla) verso il Presentation Layer. Riceve le richieste dal livello superiore per il controllo del lavaggio in cosrso.
@@ -456,6 +464,7 @@ class RemoteControlManager is
     network: NetworkInterface // associazione con Hardware Layer
     auth: AuthenticationService // per autenticare i device remoti
     interpreter: RemoteCommandInterpreter // riferimento per la gestione dei dispositivi di controllo
+    storage: IStorage // per salvare/caricare i dispositivi remoti
 
     // Metodi
     accept(device: Device)
@@ -463,6 +472,7 @@ class RemoteControlManager is
     listen() // start connection
     handleCommunication(device: Device) // interpreter.interpretCommand(smd) e verifica l'auth del device
     broadcast(data: string) // send data to all connected devices 
+    saveDevicesInStorage() // salva i dispositivi remoti nella memoria di massa
 ```
 // RemoteControlManager gestisce la registrazione, autenticazione (tramite AuthenticationService) e comunicazione con i dispositivi di controllo remoto (ad esempio app mobile, smart speaker, tablet, ecc.) che interagiscono con la lavatrice intelligente.
 gestire la comunicazione, ascoltare nuove connessioni e inviare dati a tutti i dispositivi remoti associati.
@@ -476,6 +486,7 @@ class IoTIntegrationService is
     washingManager: WashingManager // associazione per ottimizzazione
     NotificationService // to push notification when needed
     optimization: bool // attiva/disattiva
+    storage: IStorage // per salvare/caricare le impostazioni di ottimizzazione e i dispositivi associati
 
     // Metodi
     discoverDevices(): List<Device>
@@ -485,6 +496,7 @@ class IoTIntegrationService is
     processIoTData(iotData: string)
     turnOffOptimization()
     turnOnOptimization()
+    saveInStorage() // salva i dispositivi associati e lo stato di ottimizzazione nella memoria di massa
 ```
 // Descrizione: Classe dell'Application Layer che gestisce l'integrazione e la comunicazione con dispositivi IoT esterni (es. termostati, contatore intelligente). Utilizza NetworkInterface per la comunicazione di rete, mantiene la lista dei dispositivi associati, riceve dati e invia comandi. Il metodo processIoTData interpreta i dati ricevuti dai dispositivi IoT e invoca washingManager.optimizeCycle(iotData) per ottimizzare il ciclo di lavaggio in base alle informazioni raccolte.
 
@@ -505,6 +517,7 @@ class AuthenticationService is
     // Attributi
     network: NetworkInterface // associazione con Hardware Layer
     sessions: List<Session> // gestione multi-sessione per utenti/dispositivi
+    storage: IStorage // per salvare/caricare le sessioni attive
 
     // Metodi
     login(username: string, password: string): sessionId: string
@@ -515,6 +528,7 @@ class AuthenticationService is
     isDeviceAuthenticated(deviceId: string): bool
     loginWithQR(userId: sring, qrCodeData: string): bool
     generateLoginQR(): string // one-time token, l’app (già autenticata) invia userId al backend dopo la scansione.
+    saveSessionsInStorage() // salva le sessioni attive nella memoria di massa
 ```
 // Descrizione: Application Service che gestisce l’autenticazione locale di utenti e dispositivi. Espone operazioni di login/logout e di verifica, verifica e rinnovo della sessione locale.
 // Il sistema attuale è progettato per autenticazione locale e gestione multi-sessione (lista di Session), per un sistemi chiusi.
@@ -560,9 +574,11 @@ class DiagnosticHandler is
     authService: AuthenticationService // dipendenza per verifica autenticazione
     notification: NotificationService // push notification when needed
     lastReport: DiagnosticReport
+    storage: IStorage // per salvare/caricare i report di diagnostica
 
     // Metodi
     execute(sessionId: string): DiagnosticReport // verifica autenticazione, interroga hardware, costruisce report
+    saveLastReportInStorage() // salva l'ultimo report nella memoria di massa
 ```
 // Descrizione: Application Service che implementa la logica di diagnostica, interagisce con l’hardware, raccoglie i risultati e li restituisce al controller/menu.
 
@@ -597,12 +613,14 @@ class NotificationService is
     notifications: List<Notification> // notifiche disponibili
     remote: RemoteControlManager
     global: SystemContext // per notificare la presenza di nuove notifiche
+    storage: IStorage // per salvare/caricare le notifiche
 
     // Metodi
     get(id: string): Notification
     getAll(): List<Notification>
     delete(id: string)
     clearAll()
+    saveNotificationInStorage() // salva le notifiche nella memoria di massa
 ```
 // Descrizione: Service centralizzato che gestisce la creazione, memorizzazione e invio delle notifiche agli utenti. Può essere invocato da WashingManager, DiagnosticHandler, ResetHandler, ecc.
 
@@ -657,6 +675,15 @@ interface NetworkInterface is
     broadcast(data: NetworkPacket)
 ```
 // Descrizione: Interfaccia dell'Hardware Layer che astrae la connettività di rete (Wi-Fi, Ethernet, ecc.). Permette alla lavatrice di connettersi a una rete, inviare/ricevere dati (per IoT, controllo remoto, aggiornamenti, ecc.). Implementata da moduli hardware specifici.
+
+**Interfaccia StorageInterface**
+```
+interface IStorage is
+    // Metodi
+    read(address: int, length: int): byte[]
+    write(address: int, data: byte[]): bool
+```
+// Descrizione: Interfaccia dell'Hardware Layer che astrae l'accesso alla memoria di massa (es. memoria flash, EEPROM, SD card). Permette di leggere e scrivere dati persistenti (configurazioni, ecc.). Implementata da moduli hardware specifici.
 
 ### Relazioni
 

@@ -16,6 +16,7 @@ Inoltre è conforme al pattern **Observer** per permettere ad altre classi (es. 
 - `config` (`UIConfiguration`): istanza della configurazione UI globale
 - `observers` (`List<Observer>`): lista degli osservatori registrati per le notifiche di cambiamento del contesto
 - `hasUnreadNotifications`: flag per indicare la presenza di notifiche non lette, permette di mostrare un indicatore nell'interfaccia utente
+- `storage` (`IStorage`): interfaccia per l'accesso alla memoria di massa, utilizzata per salvare/caricare le configurazioni persistenti
 
 **Principali metodi:**
 - `getInstance()`: restituisce l’istanza singleton
@@ -24,6 +25,8 @@ Inoltre è conforme al pattern **Observer** per permettere ad altre classi (es. 
     - `Event`: oggetto evento contenente informazioni sul cambiamento, es. con attributi come `type="UIConfChange"` e `data={fontSize: "large", contrast: "high"}` per indicare che la configurazione UI è cambiata
 - `register(o: Observer)`: aggiunge un nuovo osservatore alla lista `observers`
 - `unregister(o: Observer)`: rimuove un osservatore esistente dalla lista `observers`
+- `saveInStorage()`: salva la configurazione/stato corrente (`UIConfiguration`, `sessionId`, `hasUnreadNotifications`) nella memoria di massa tramite l'interfaccia `IStorage.write(...)`, permettendo la persistenza delle impostazioni utente
+    - durante l'invocazione del Constructor di `SystemContext`, carica lo stato salvato (se presente) dalla memoria di massa per inizializzare gli attributi tramite `storage.read(...)`
 - Getter/setter per `sessionId`, `hasUnreadNotifications` e `config`, con i setter che invocano `notifyObservers()` per informare gli osservatori delle modifiche
 
 **motivazione:**
@@ -122,6 +125,7 @@ La classe `WashingManager` è il componente per la gestione dei cicli di lavaggi
 - `piano`: riferimento al `PianoLavaggio` in corso di esecuzione
 - `hardware`: interfaccia verso l’Hardware Layer, che consente il controllo dei dispositivi fisici
 - `notification`: riferimento a `NotificationService`
+- `storage`: riferimento a `IStorage` per salvare lo stato e il piano del lavaggio in corso
 
 **Principali metodi:**
 - `avviaLavaggio(piano: PianoLavaggio)`: avvia un nuovo ciclo di lavaggio, basato sul piano fornito
@@ -133,6 +137,8 @@ La classe `WashingManager` è il componente per la gestione dei cicli di lavaggi
 - `getState()`: restituisce lo stato corrente
 - `optimizeCycle(iotData: string)`: ottimizza il ciclo in base ai dati IoT, tenendo conto delle condizioni di consumo energetico nell'ambiente circostante
 - `getTaskProgress()`: restituisce la percentuale di avanzamento (0-100) del ciclo di lavaggio corrente
+- `saveInStorage()`: salva lo stato corrente e il piano del lavaggio in corso nella memoria di massa tramite l'interfaccia `IStorage.write(...)`, permettendo la persistenza del ciclo in corso in caso di interruzioni.
+    - `storage.read(...)` è utilizzato durante l'inizializzazione (Constructor) per caricare lo stato salvato (se presente)
 
 ---
 
@@ -204,11 +210,14 @@ Questa classe è l'Observer (**TODO: implementa Observer pattern**) del clock di
 **Principali attributi:**
 - `schedules`: lista delle pianificazioni attive (`Schedule`)
 - `washingManager`: riferimento al componente che esegue i cicli (`WashingManager`)
+- `storage`: riferimento a `IStorage` per salvare/caricare le pianificazioni nella memoria di massa
 
 **Principali metodi:**
 - `onTick(currentTime: DateTime)`: metodo chiamato periodicamente dal clock di sistema; verifica se ci sono cicli da avviare (la data corrente è superiore alla data di inizio della pianificazione) e, in caso positivo, delega l'esecuzione a `WashingManager` tramite `WashingManager.avviaLavaggio()` con il piano corrispondente.
 - `aggiungiSchedule(schedule: Schedule)`: aggiunge una nuova pianificazione alla lista.
 - `validaSchedule(schedule: Schedule)`: valida una pianificazione prima di aggiungerla alla lista (es. controlla conflitti di orario), richiamata da `WashPlanningService` per la validazione di nuove pianificazioni.
+- `saveInStorage()`: salva le pianificazioni correnti nella memoria di massa tramite l'interfaccia `IStorage.write(...)`, permettendo la persistenza delle pianificazioni in caso di interruzioni.
+    - `storage.read(...)` è utilizzato durante l'inizializzazione (Constructor) per caricare le pianificazioni salvate (se presenti)
 
 **motivazione:**
 - Implementa la logica di scheduling separando la gestione temporale della pianificazione dei lavaggi dalla logica dell'esecuzione dei cicli di lavaggio.
@@ -252,11 +261,14 @@ La classe `WashPlanningService` è l'application service responsabile della pian
 - `scheduler`: riferimento al componente che gestisce la pianificazione temporale (`Scheduler`).
 - `catalog`: lista delle piani di lavaggio disponibili del sistema.
 - `notification`: riferimento al servizio di notifica per eventuali messaggi all'utente (`NotificationService`) come errori o avvisi di successo.
+- `storage`: riferimento a `IStorage` per salvare/caricare i piani di lavaggio nella memoria di massa
 
 **Principali metodi:**
 - `getCatalog()`: `List<PianoLavaggio>` : restituisce la lista dei piani di lavaggio disponibili nel sistema (solo piani predefiniti).
 - `pianificaLavaggio(piano: PianoLavaggio, dataOra: DateTime)`: crea una nuova pianificazione (`schedule`) basata sul piano e la data/ora forniti (dal controller), le aggiunge allo scheduler tramite `Scheduler.aggiungiSchedule()` che in caso di conflitto restituisce `false` indicando l'insuccesso.
     - Invia una notifica all’utente tramite `NotificationService.push()` indicando il risultato finale (sia esso errore o successo).
+- `saveInStorage()`: salva i piani di lavaggio correnti nella memoria di massa tramite l'interfaccia `IStorage.write(...)`, permettendo la persistenza del catalogo di Piani predefiniti in caso di interruzioni.
+    - `storage.read(...)` è utilizzato durante l'inizializzazione (Constructor) per caricare i piani salvati (se presenti)
 
 **motivazione:**
 - Garantire che le pianificazioni siano corrette e non in conflitto.
@@ -327,10 +339,13 @@ La classe `DiagnosticHandler` è responsabile della gestione delle procedure di 
 - `hardwareInterface`: riferimento all’interfaccia hardware per l’esecuzione dei test.
 - `notification`: riferimento al servizio di notifica per comunicare l’esito della diagnostica.
 - `lastReport`: ultimo report diagnostico generato, per l’ispezione dell’ultimo test.
+- `storage`: riferimento a `IStorage` per salvare/caricare i report di diagnostica.
 
 **Principali metodi:**
 - `execute(sessionId: string): DiagnosticReport`: avvia la procedura di diagnostica, esegue i test sui componenti, raccoglie e analizza i risultati, genera e restituisce un report
     - Prima di effettuarlo verifica i permessi dell’utente tramite `AuthenticationService.verify(sessionId)`. Al termine invia una notifica all’utente tramite `NotificationService.push()` con l’esito della diagnostica.
+- `saveLastReportInStorage()`: salva l'ultimo report diagnostico nella memoria di massa tramite l'interfaccia `IStorage.write(...)`, permettendo la persistenza del report in caso di interruzioni.
+    - `storage.read(...)` è utilizzato durante l'inizializzazione (Constructor) per caricare l'ultimo report salvato (se presente)
 - setter and getter impliciti restituisce/modificare l’ultimo report diagnostico generato.
 
 ---
@@ -403,5 +418,16 @@ La classe `DiagnosticReport` rappresenta il risultato di una procedura di diagno
 
 ---
 
+### Interface IStorage
+**Ruolo e Responsabilità:**
+L'interfaccia `IStorage` definisce i metodi standard per l'accesso e la gestione dei dati persistenti all'interno della lavatrice intelligente. Indipendentemente dal tipo di storage utilizzato (es. database, file system, cloud).
 
+**Principali Metodi:**
+- `read(address: int, length: int): byte[]`: legge un blocco di dati dalla memoria.
+- `write(address: int, data: byte[]): bool`: scrive un blocco di dati nella memoria.
 
+**motivazione:**
+- Fornisce un'interfaccia uniforme per l'accesso ai dati persistenti, facilitando la sostituzione o l'aggiornamento del sistema di storage senza influenzare il resto dell'applicazione.
+- Promuove la separazione delle preoccupazioni, consentendo alle classi di business logic di interagire con i dati senza doversi preoccupare dei dettagli di implementazione dello storage.
+- Facilita il testing e la manutenzione del codice, poiché le implementazioni concrete possono essere facilmente sostituite con mock o stub durante i test.
+- Consente il riutilizzo del codice in diversi contesti o progetti (componenti dell'application layer esplicitano le loro dipendenze attraverso questa interfaccia).
