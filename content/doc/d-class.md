@@ -70,19 +70,21 @@ La classe `ConfigurationMenu` gestisce l’interfaccia utente per la configurazi
 
 **Collaborazioni:**
 - Interagisce con  `SystemContext` per il reperimento delle impostazioni correnti (`unreadNotifications` e `UIConfiguration` corrente).
+    - la registrazione come osservatore avviene nel constructor
 - Interagisce con `ConfigurationController` per la gestione delle modifiche.
 
 **Principali attributi:**
 - `ObservableCtx`: (`SystemContext`): riferimento al contesto di sistema per accedere alla configurazione UI globale e lo stato delle notifiche
 - `options:`: opzioni disponibili nel menu di configurazione (key:value) per la modifica/interrogazione delle impostazioni
+- `controller`: riferimento al `ConfigurationController` che gestisce l'interazione con l'application layer per la gestione delle impostazioni
 
 **Principali metodi:**
 - `render()`: visualizza il menu di configurazione (qualsiasi sia la tecnologia UI utilizzata per implementare la GUI), recuperando le impostazioni correnti da `SystemContext` (come `UIConfiguration` e `hasUnreadNotifications`)
 - `saveConfig()`: applica le modifiche effettuate dall’utente (presenti in `options`), richiamando i metodi di `ConfigurationController` come `onSaveConfig(options: map<string, string>)`, callback richiamata quando l'utente clicca sul bottone salva della UI
 - `resetToDefaults()`: ripristina le impostazioni di default, richiamando `UIConfiguration.resetToDefaults()`
-- `update(e: Event)`: gestisce le notifiche di cambiamento dal contesto globale `SystemContext`, aggiornando la visualizzazione del menu di pianificazione se necessario.
-- `onEnableVoiceCommands()`: abilita i comandi vocali nel `SystemContext`
-- `onDisableVoiceCommands()`: disabilita i comandi vocali nel `SystemContext`
+- `update(e: Event)`: gestisce le notifiche di cambiamento dal contesto globale `SystemContext`, aggiornando la visualizzazione del menu di pianificazione se necessario (invocando `render()`).
+- `onEnableVoiceCommands()`: abilita i comandi vocali nel `SystemContext` tramite l'invocazione del metodo del controller `onEnableVoiceCommands(sessionId: string)` e fornendo la `sessionId` corrente nel `SystemContext`
+- `onDisableVoiceCommands()`: disabilita i comandi vocali nel `SystemContext` tramite l'invocazione del metodo del controller `onDisableVoiceCommands(sessionId: string)` e fornendo la `sessionId` corrente nel `SystemContext`
 
 **motivazione:**
 - Fornisce un’interfaccia per la personalizzazione delle impostazioni di UI.
@@ -180,11 +182,12 @@ La classe `WashControlMenu` gestisce l’interfaccia utente dedicata al controll
 
 **Collaborazioni:**
 - Interagisce con `WashControlController` per inviare comandi e ricevere aggiornamenti sullo stato del ciclo.
-- Utilizza `UIConfiguration` per adattare la visualizzazione alle preferenze dell’utente (es. accessibilità).
+- Utilizza `UIConfiguration` per adattare la visualizzazione alle preferenze dell’utente (es. accessibilità) tramite `SystemContext`.
 
 **Principali attributi:**
 - `controller`: riferimento al `WashControlController` che gestisce l'interazione con il Application Layer per la gestione del ciclo di lavaggio.
 - `ObservableCtx`: riferimento alla configurazione UI globale (`SystemContext`) per il reperimento delle informazioni necessarie al rendering/accessibilità.
+    - la registrazione come osservatore avviene nel constructor
 
 **Principali metodi:**
 - `render()`: implementa la visualizzazione dell’interfaccia di controllo (qualsiasi sia la tecnologia UI utilizzata per implementare la GUI), richiama i metodi `onGetTaskProgress()` e `onGetState()` del controller `WashControlController` per aggiornare la visualizzazione dell'avanzamento e dello stato del ciclo, ecc.
@@ -192,7 +195,7 @@ La classe `WashControlMenu` gestisce l’interfaccia utente dedicata al controll
 - `inviaComandoPausa()`: invia il comando di pausa tramite il controller, `WashControlController.onPausaLavaggio()`. Callback richiamata quando l'utente clicca sul bottone pausa della UI.
 - `inviaComandoRiprendi()`: invia il comando di ripresa tramite il controller `WashControlController.onRiprendiLavaggio()`. Callback richiamata quando l'utente clicca sul bottone riprendi della UI.
 - `inviaComandoAnnulla()`: invia il comando di annullamento tramite il controller `WashControlController.onAnnullaLavaggio()`. Callback richiamata quando l'utente clicca sul bottone annulla della UI.
-- `update(e: Event)`: gestisce le notifiche di cambiamento dal contesto globale `SystemContext`, aggiornando la visualizzazione del menu di pianificazione se necessario.
+- `update(e: Event)`: gestisce le notifiche di cambiamento dal contesto globale `SystemContext`, aggiornando la visualizzazione del menu di pianificazione se necessario (invocando `render()`).
 
 **motivazione:**
 - Implementa la view del pattern MVC, separando la presentazione dalla logica di controllo.
@@ -308,6 +311,8 @@ La classe `WashPlanningMenu` gestisce l’interfaccia utente per la pianificazio
 **Collaborazioni:**
 - Interagisce con `WashPlanningController` per ottenere il catalogo dei piani di lavaggio e per inviare le richieste di pianificazione.
 - Utilizza `PianoLavaggio` per visualizzare i dettagli dei piani di lavaggio disponibili.
+- Utilizza `UIConfiguration` per adattare la visualizzazione alle preferenze dell’utente (es. accessibilità) tramite `SystemContext`.
+    - la registrazione come osservatore avviene nel constructor
 
 **Principali attributi:**
 - `controller`: riferimento al `WashPlanningController` che gestisce la logica di pianificazione e restituisce i piani di lavaggio disponibili.
@@ -319,7 +324,7 @@ La classe `WashPlanningMenu` gestisce l’interfaccia utente per la pianificazio
 - `render()`: visualizza il menu di pianificazione (qualsiasi sia la tecnologia UI utilizzata per implementare la GUI), mostrando il catalogo dei piani di lavaggio e i campi per la selezione della data/ora.
     - Adatta la visualizzazione in base alle impostazioni correnti da `SystemContext` (come `UIConfiguration` e `hasUnreadNotifications`)
 - `submit()`: invia la richiesta di pianificazione al controller tramite `controller.onPianificaLavaggio(selectedPiano, dataOra)`. Callback richiamata quando l'utente clicca sul bottone pianifica della UI.
-- `update(e: Event)`: gestisce le notifiche di cambiamento dal contesto globale `SystemContext`, aggiornando la visualizzazione del menu di pianificazione se necessario.
+- `update(e: Event)`: gestisce le notifiche di cambiamento dal contesto globale `SystemContext`, aggiornando la visualizzazione del menu di pianificazione se necessario (invocando `render()`).
 
 **motivazione:**
 - Implementa la view del pattern MVC, separando la presentazione dalla logica di controllo.
@@ -386,6 +391,8 @@ La classe `DiagnosticMenu` gestisce l’interfaccia utente dedicata alle operazi
 **Collaborazioni:**
 - Interagisce con `DiagnosticController` per avviare la diagnostica e ottenere i report.
 - Utilizza `DiagnosticReport` per visualizzare i risultati dei test diagnostici.
+- Utilizza `UIConfiguration` per adattare la visualizzazione alle preferenze dell’utente (es. accessibilità) tramite `SystemContext`.
+    - la registrazione come osservatore avviene nel constructor
 
 **Principali attributi:**
 - `controller`: riferimento al `DiagnosticController` che gestisce la logica di diagnostica.
@@ -396,7 +403,7 @@ La classe `DiagnosticMenu` gestisce l’interfaccia utente dedicata alle operazi
     - (qualsiasi sia la tecnologia UI utilizzata per implementare la GUI)
     - Adatta la visualizzazione in base alle impostazioni correnti da `SystemContext` (come `UIConfiguration` e `hasUnreadNotifications`)
 - `startDiagnostica()`: invia la richiesta di diagnostica al controller tramite `controller.onStartDiagnostica(sessionId)` dove `sessionId` è fornito dalla `UIConfiguration.sessionId`. Callback richiamata quando l'utente clicca sul bottone avvia diagnostica della UI.
-- `update(e: Event)`: gestisce le notifiche di cambiamento dal contesto globale `SystemContext`, aggiornando la visualizzazione del menu di pianificazione se necessario.
+- `update(e: Event)`: gestisce le notifiche di cambiamento dal contesto globale `SystemContext`, aggiornando la visualizzazione del menu di pianificazione se necessario (invocando `render()`).
 
 **motivazione:**
 - Implementa la view del pattern MVC, separando la presentazione dalla logica di controllo e gestione della diagnostica.
@@ -435,3 +442,77 @@ L'interfaccia `IStorage` definisce i metodi standard per l'accesso e la gestione
 - Promuove la separazione delle preoccupazioni, consentendo alle classi di business logic di interagire con i dati senza doversi preoccupare dei dettagli di implementazione dello storage.
 - Facilita il testing e la manutenzione del codice, poiché le implementazioni concrete possono essere facilmente sostituite con mock o stub durante i test.
 - Consente il riutilizzo del codice in diversi contesti o progetti (componenti dell'application layer esplicitano le loro dipendenze attraverso questa interfaccia).
+
+### Classe AuthenticationService
+**Ruolo e Responsabilità:**
+La classe `AuthenticationService` è responsabile della gestione dell'autenticazione degli utenti che interagiscono con la lavatrice intelligente. Fornisce metodi per verificare le credenziali degli utenti e gestire le sessioni di accesso.
+Il servizio è implementato localmente e non si appoggia a servizi esterni. L'autenticazione per l'interazione fisica (tramite UI dello schermo) con la Lavatrice intelligente è destinata a un singolo utente (amministratore) che può accedere a funzionalità sensibili come la diagnostica (ma è possibile avere multi-device e quindi molteplici utenti su diversi dispositivi es. mobile).
+
+**Collaborazioni:**
+- Utilizzata da componenti che richiedono l'autenticazione, come `DiagnosticHandler`, `SystemContext`, `CommandDispatcher` ecc. per verificare i permessi degli utenti prima di eseguire operazioni sensibili.
+- Utilizza `IStorage` per salvare e recuperare le informazioni sulle sessioni utente.
+
+**Principali attributi:**
+- `users`: mantiene le credenziali degli utenti (username:password) e le informazioni sulle sessioni attive tramite userID, l'unico ruolo (implicito) è quello di amministratore.
+- `sessions` (`List<Session>`): lista delle sessioni attive, ogni sessione contiene le informazioni relative all'utente autenticato e lo stato della sessione.
+- `storage`: riferimento a `IStorage` per salvare/caricare le informazioni sulle sessioni nella memoria di massa.
+    - `storage.read(...)` è utilizzato durante l'inizializzazione (Constructor) per caricare lo stato salvato (se presente)
+    - `storage.write(...)` è utilizzato per salvare lo stato delle sessioni e utenti quando necessario, solitamente dopo ogni modifica.
+
+**Principali metodi:**
+- `login(username: string, password: string): string`: verifica le credenziali fornite; se valide, crea una nuova sessione, la aggiunge alla lista delle sessioni attive e restituisce un `sessionId` univoco per l'utente autenticato. Se le credenziali non sono valide, restituisce una stringa vuota (o null).
+- `logout(sessionId: string): bool`: termina la sessione associata al `sessionId` fornito, rimuovendola dalla lista delle sessioni attive. Restituisce true se la sessione è stata terminata con successo, false altrimenti.
+- `verify(sessionId: string): bool`: verifica se il `sessionId` fornito corrisponde a una sessione attiva. Restituisce true se la sessione è valida, false altrimenti.
+- `saveInStorage()`: salva le informazioni sulle sessioni e gli utenti nella memoria di massa tramite l'interfaccia `IStorage.write(...)`, permettendo la persistenza dei dati in caso di interruzioni.
+- `refreshSession(sessionId: string): bool`: aggiorna la sessione associata al `sessionId` fornito, estendendo la sua durata. Restituisce true se la sessione è stata aggiornata con successo, false altrimenti.
+- `recoverPassword(username: string): string`: avvia la procedura di recupero password per l'utente specificato. cerca in `users` la corrispondenza per `username`.
+- `isDeviceAuthenticated(deviceId: string): bool`: restituisce true se un il device è attualmente autenticato sulla lavatrice intelligente, false altrimenti.
+    - impiegato dal `RemoteControlManager` per validare i comandi remoti provenienti da dispositivi autenticati.
+- `generateQRCode(): string`: genera un codice QR consentendo l'autenticazione tramite scansione. Restituisce il codice QR come stringa (one-time token).
+    - In un thread separato `loginWithQR(token: string)` tramite una connessione via `network` (`NetworkInterface`) monitora la ricezione del token di autenticazione da un dispositivo mobile (intervallo di tempo limitato).
+    - In caso di ricezione valida, autentica il dispositivo mobile associato e lo aggiunge alla lista delle sessioni attive.
+    - utilizzato per facilitare l'accesso degli utenti tramite dispositivi mobili.
+- `loginWithQR(token: string): bool`: verifica il token QR fornito (one-time token); se valido, crea una nuova sessione, la aggiunge alla lista delle sessioni attive e restituisce true. Se il token non è valido, restituisce false.
+
+**motivazione:**
+- Fornisce un meccanismo di autenticazione centralizzato per garantire che solo utenti autorizzati (amministratori) possano accedere a funzionalità sensibili della lavatrice intelligente.
+
+---
+
+### Classe User
+**Ruolo e Responsabilità:**
+La classe `User` rappresenta un utente del sistema della lavatrice intelligente. Gestisce le informazioni di autenticazione e i dati di profilo necessari per l'accesso e l'utilizzo delle funzionalità sensibili.
+
+**Collaborazioni:**
+- Utilizzata da `AuthenticationService` per la verifica delle credenziali e la gestione delle sessioni.
+
+**Principali attributi:**
+- `userId`: string, identificativo univoco dell'utente (permette di recuperare le `session` attive associate).
+- `username`: string, nome utente per il login.
+- `passwordHash`: string, hash della password per la verifica sicura.
+
+**Principali metodi:**
+- setter e getter impliciti per tutti gli attributi.
+
+---
+
+### Classe Session
+**Ruolo e Responsabilità:**
+La classe `Session` rappresenta una sessione di autenticazione attiva per un utente o dispositivo che interagisce con la lavatrice intelligente. Gestisce lo stato e la validità dell'accesso.
+
+**Collaborazioni:**
+- Utilizzata da `AuthenticationService` per tracciare gli accessi attivi e gestire la durata delle sessioni.
+- Può essere associata a una istanza di `User` per identificare l'utente autenticato.
+
+**Principali attributi:**
+- `sessionId`: string, identificativo univoco della sessione.
+- `userId`: string, riferimento all'utente autenticato.
+- `deviceId`: string, identificativo del dispositivo che ha avviato la sessione (es. app mobile, display integrato).
+- `createdAt`: DateTime, data e ora di creazione della sessione.
+- `expiresAt`: DateTime, data e ora di scadenza della sessione.
+- `isActive`: bool, indica se la sessione è attualmente valida.
+
+**Principali metodi:**
+- setter e getter impliciti per tutti gli attributi.
+- `isValid(): bool`: verifica se la sessione è attiva e non scaduta.
+- `invalidate()`: termina la sessione, impostando `isActive` a false.

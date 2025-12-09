@@ -514,9 +514,10 @@ classe Device is
 ```
 class AuthenticationService is
     // Attributi
-    network: NetworkInterface // associazione con Hardware Layer
     sessions: List<Session> // gestione multi-sessione per utenti/dispositivi
     storage: IStorage // per salvare/caricare le sessioni attive
+    users: List<User> // elenco utenti registrati
+    network: NetworkInterface // recezione del one-time token del QR code da app mobile
 
     // Metodi
     login(username: string, password: string): sessionId: string
@@ -525,9 +526,9 @@ class AuthenticationService is
     refreshSession(idSession: string): Session
     recoverPassword(username: string)
     isDeviceAuthenticated(deviceId: string): bool
-    loginWithQR(userId: sring, qrCodeData: string): bool
+    loginWithQR(token: string): bool
     generateLoginQR(): string // one-time token, l’app (già autenticata) invia userId al backend dopo la scansione.
-    saveSessionsInStorage() // salva le sessioni attive nella memoria di massa
+    saveInStorage() // salva le sessioni attive e gli utenti registrati nella memoria di massa
 ```
 // Descrizione: Application Service che gestisce l’autenticazione locale di utenti e dispositivi. Espone operazioni di login/logout e di verifica, verifica e rinnovo della sessione locale.
 // Il sistema attuale è progettato per autenticazione locale e gestione multi-sessione (lista di Session), per un sistemi chiusi.
@@ -551,6 +552,16 @@ class Session is
     invalidate(): void
 ```
 // Descrizione: Rappresenta una sessione di autenticazione attiva per utente o dispositivo. Gestisce scadenza, stato della sessione autenticata. userId identificativo dell’utente autenticato a cui è associata la sessione. deviceId rappresenta l’identificativo del dispositivo che ha avviato la sessione, permette alla lavatrice di essere controllata da più dispositivi (es. app mobile).
+
+**Class User**
+```
+class User is
+    // Attributi
+    userId: string
+    username: string
+    passwordHash: string
+```
+// Descrizione: Rappresenta un utente del sistema con credenziali..
 
 **Classe Gestore reset lavatrice**
 ```
