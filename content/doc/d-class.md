@@ -9,10 +9,11 @@ Inoltre è conforme al pattern **Observer** per permettere ad altre classi (es. 
 - Utilizzata `Event` per fornire informazioni sui cambiamenti del contesto (es. modifica delle preferenze utente).
 - Utilizzata da tutte le view per accedere alla Configurazione UI globale tramite `UIConfiguration` utilizzata nel rendering/presentazione.
 - Il `NotificationService` interagisce con `SystemContext` per indicare la presenza di notifiche non lette.
-- Utilizzata dal `LoginForm` dopo una richiesta di login che ha avuto successo per aggiornare la proprietà `sessionId`.
+- Utilizzata dal `LoginForm` dopo una richiesta di login che ha avuto successo per aggiornare la proprietà `sessionId` e `currentUser`.
 
 **Principali attributi:**
 - `sessionId`: identificatore della sessione utente corrente (per la lavatrice, non per l'app mobile), utilizzata per autenticare le richieste, il valore è null altrimenti
+- `currentUser`: riferimento all'utente attualmente loggato, null se nessun utente è autenticato (permette di repererire informazioni come la lingua preferita, ecc.), settato insieme alla `sessionId` dopo un login con successo (dalla classe `loginForm`)
 - `config` (`UIConfiguration`): istanza della configurazione UI globale
 - `observers` (`List<Observer>`): lista degli osservatori registrati per le notifiche di cambiamento del contesto
 - `hasUnreadNotifications`: flag per indicare la presenza di notifiche non lette, permette di mostrare un indicatore nell'interfaccia utente
@@ -77,6 +78,7 @@ La classe `ConfigurationMenu` gestisce l’interfaccia utente per la configurazi
 - `ObservableCtx`: (`SystemContext`): riferimento al contesto di sistema per accedere alla configurazione UI globale e lo stato delle notifiche
 - `options:`: opzioni disponibili nel menu di configurazione (key:value) per la modifica/interrogazione delle impostazioni
 - `controller`: riferimento al `ConfigurationController` che gestisce l'interazione con l'application layer per la gestione delle impostazioni
+- `page`: pagina corrente mostrata del menu (es. 1 list all options, 2 change font size)
 
 **Principali metodi:**
 - `render()`: visualizza il menu di configurazione (qualsiasi sia la tecnologia UI utilizzata per implementare la GUI), recuperando le impostazioni correnti da `SystemContext` (come `UIConfiguration` e `hasUnreadNotifications`)
@@ -460,7 +462,7 @@ Il servizio è implementato localmente e non si appoggia a servizi esterni. L'au
     - `storage.write(...)` è utilizzato per salvare lo stato delle sessioni e utenti quando necessario, solitamente dopo ogni modifica.
 
 **Principali metodi:**
-- `login(username: string, password: string): string`: verifica le credenziali fornite; se valide, crea una nuova sessione, la aggiunge alla lista delle sessioni attive e restituisce un `sessionId` univoco per l'utente autenticato. Se le credenziali non sono valide, restituisce una stringa vuota (o null).
+- `login(user: User): string`: verifica le credenziali fornite; se valide, crea una nuova sessione, la aggiunge alla lista delle sessioni attive e restituisce un `sessionId` univoco per l'utente autenticato. Se le credenziali non sono valide, restituisce una stringa vuota (o null).
 - `logout(sessionId: string): bool`: termina la sessione associata al `sessionId` fornito, rimuovendola dalla lista delle sessioni attive. Restituisce true se la sessione è stata terminata con successo, false altrimenti.
 - `verify(sessionId: string): bool`: verifica se il `sessionId` fornito corrisponde a una sessione attiva. Restituisce true se la sessione è valida, false altrimenti.
 - `saveInStorage()`: salva le informazioni sulle sessioni e gli utenti nella memoria di massa tramite l'interfaccia `IStorage.write(...)`, permettendo la persistenza dei dati in caso di interruzioni.
@@ -490,6 +492,8 @@ La classe `User` rappresenta un utente del sistema della lavatrice intelligente.
 - `userId`: string, identificativo univoco dell'utente (permette di recuperare le `session` attive associate).
 - `username`: string, nome utente per il login.
 - `passwordHash`: string, hash della password per la verifica sicura.
+- `email`: string, indirizzo email dell'utente.
+- `language`: string, lingua preferita dell'utente.
 
 **Principali metodi:**
 - setter e getter impliciti per tutti gli attributi.

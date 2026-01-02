@@ -78,15 +78,14 @@ class CommandDispatcher is
 ```
 class LoginForm implements Observer is
     // Attributi
-    username: string
-    password: string
+    user: User // riferimento all'utente da autenticare o registrare
     controller: AuthController // riferimento al controller
     ObservableCtx: SystemContext // for the rendering config
 
     // Metodi
-    submitLogin() // chiama controller.onLogin(username, password) e utilizza il risultante sessionId per aggiornare la sessione in SystemContext
+    submitLogin() // chiama controller.onLogin(user: User) e utilizza il risultante sessionId per aggiornare la sessione in SystemContext
     submitLogout() // chiama controller.onLogout()
-    submitSignup() // chiama controller.onSignup(username, password)
+    submitSignup() // chiama controller.onSignup(user: User)
     recoverPassword(username: string)
     render()
     update(e: Event)
@@ -100,10 +99,10 @@ class AuthController is
     authService: AuthenticationService // dipendenza verso Application Service
 
     // Metodi
-    onLogin(username: string, password: string): sessionId: string // chiama authService.login()
+    onLogin(user: User): sessionId: string // chiama authService.login()
     onLogout(): bool // chiama authService.logout()
     OnRecoverPassword(username: string)
-    onSignup(username: string, password: string)
+    onSignup(user: User)
     getQr(): string
 ```
 // Descrizione: Controller del Presentation Layer dedicato alla gestione delle operazioni di login e logout. Riceve i dati dalla view di login/logout, effettua una verifica dei campi e li inoltra ad AuthenticationService.
@@ -262,6 +261,7 @@ class ConfigurationMenu implements Observer is
     controller: UIConfigurationController // riferimento al controller
     ObservableCtx: SystemContext // configurazione corrente (singleton)
     options: map<string, string>
+    page: int // pagina corrente del menu (es. 1 list all options, 2 change font size)
 
     // Metodi
     render() // mostra le opzioni di personalizzazione
@@ -318,6 +318,7 @@ class SystemContext is
     storage: StorageInterface
     observers: List<Observer>
     sessionId: string
+    currentUser: User
     hasUnreadNotifications: bool
     voiceCommandsEnabled: bool
 
@@ -522,7 +523,7 @@ class AuthenticationService is
     network: NetworkInterface // recezione del one-time token del QR code da app mobile
 
     // Metodi
-    login(username: string, password: string): sessionId: string
+    login(user: User): sessionId: string
     logout(): void
     verifySession(idSession: string): bool
     refreshSession(idSession: string): Session
@@ -531,7 +532,7 @@ class AuthenticationService is
     loginWithQR(token: string): bool
     generateLoginQR(): string // one-time token, l’app (già autenticata) invia userId al backend dopo la scansione.
     saveInStorage() // salva le sessioni attive e gli utenti registrati nella memoria di massa
-    signup(username: string, password: string)
+    signup(user: User)
 ```
 // Descrizione: Application Service che gestisce l’autenticazione locale di utenti e dispositivi. Espone operazioni di login/logout e di verifica, verifica e rinnovo della sessione locale.
 // Il sistema attuale è progettato per autenticazione locale e gestione multi-sessione (lista di Session), per un sistemi chiusi.
@@ -563,6 +564,8 @@ class User is
     userId: string
     username: string
     passwordHash: string
+    email: string
+    language: string
 ```
 // Descrizione: Rappresenta un utente del sistema con credenziali..
 
