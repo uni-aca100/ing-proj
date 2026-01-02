@@ -10,6 +10,7 @@ class WashPlanningForm implements Observer is
     dataOra: DateTime // data/ora pianificazione
     controller: WashPlanningController // riferimento al controller
     ObservableCtx: SystemContext // for the rendering config
+    options: map<String,String> // like temperature, spinSpeed etc.
 
     // Metodi
     submit()  // chiama controller.onPianificaLavaggio(selectedPiano, dataOra)
@@ -25,7 +26,7 @@ class WashPlanningController is
     washPlanningService: WashPlanningService // dipendenza verso Application Service
 
     // Metodi
-    onPianificaLavaggio(piano: PianoLavaggio, dataOra: DateTime)
+    onPianificaLavaggio(piano: PianoLavaggio, dataOra: DateTime, options: map<String,String>): bool // chiama washPlanningService.pianificaLavaggio()
     onGetCatalog(): List<PianoLavaggio>
 ```
 // Descrizione: Controller "sottile" (non contiene logica di business, delegata all'application Service) del Presentation Layer. che riceve i dati dal form/view per la pianificazione di cicli di lavaggio, ed un eventuale validazione lato presentazione (es. campi mancati). Gestisce l'iterazione con WashPlanningService (dell'application layer)
