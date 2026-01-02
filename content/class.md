@@ -567,6 +567,7 @@ class User is
     passwordHash: string
     email: string
     language: string
+    imgProfile: string // path immagine profilo
 ```
 // Descrizione: Rappresenta un utente del sistema con credenziali..
 
