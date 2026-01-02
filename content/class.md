@@ -86,6 +86,7 @@ class LoginForm implements Observer is
     // Metodi
     submitLogin() // chiama controller.onLogin(username, password) e utilizza il risultante sessionId per aggiornare la sessione in SystemContext
     submitLogout() // chiama controller.onLogout()
+    submitSignup() // chiama controller.onSignup(username, password)
     recoverPassword(username: string)
     render()
     update(e: Event)
@@ -102,6 +103,7 @@ class AuthController is
     onLogin(username: string, password: string): sessionId: string // chiama authService.login()
     onLogout(): bool // chiama authService.logout()
     OnRecoverPassword(username: string)
+    onSignup(username: string, password: string)
     getQr(): string
 ```
 // Descrizione: Controller del Presentation Layer dedicato alla gestione delle operazioni di login e logout. Riceve i dati dalla view di login/logout, effettua una verifica dei campi e li inoltra ad AuthenticationService.
@@ -529,6 +531,7 @@ class AuthenticationService is
     loginWithQR(token: string): bool
     generateLoginQR(): string // one-time token, l’app (già autenticata) invia userId al backend dopo la scansione.
     saveInStorage() // salva le sessioni attive e gli utenti registrati nella memoria di massa
+    signup(username: string, password: string)
 ```
 // Descrizione: Application Service che gestisce l’autenticazione locale di utenti e dispositivi. Espone operazioni di login/logout e di verifica, verifica e rinnovo della sessione locale.
 // Il sistema attuale è progettato per autenticazione locale e gestione multi-sessione (lista di Session), per un sistemi chiusi.
