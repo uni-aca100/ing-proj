@@ -475,6 +475,7 @@ Il servizio è implementato localmente e non si appoggia a servizi esterni. L'au
     - In caso di ricezione valida, autentica il dispositivo mobile associato e lo aggiunge alla lista delle sessioni attive.
     - utilizzato per facilitare l'accesso degli utenti tramite dispositivi mobili.
 - `loginWithQR(token: string): bool`: verifica il token QR fornito (one-time token); se valido, crea una nuova sessione, la aggiunge alla lista delle sessioni attive e restituisce true. Se il token non è valido, restituisce false.
+- `updateUserProfile(user: User): bool`: aggiorna le informazioni del profilo utente (es. email, lingua preferita) per l'utente specificato. Restituisce true se l'aggiornamento è avvenuto con successo, false altrimenti.
 
 **motivazione:**
 - Fornisce un meccanismo di autenticazione centralizzato per garantire che solo utenti autorizzati (amministratori) possano accedere a funzionalità sensibili della lavatrice intelligente.
@@ -520,3 +521,34 @@ La classe `Session` rappresenta una sessione di autenticazione attiva per un ute
 - setter e getter impliciti per tutti gli attributi.
 - `isValid(): bool`: verifica se la sessione è attiva e non scaduta.
 - `invalidate()`: termina la sessione, impostando `isActive` a false.
+
+
+---
+
+### Classe ProfileView
+**Ruolo e Responsabilità:**
+La classe `ProfileView` gestisce l’interfaccia utente dedicata alla visualizzazione e modifica del profilo utente nella lavatrice intelligente. Permette all’utente di visualizzare le informazioni del proprio profilo e di modificarle se necessario.
+**Implementa l'interfaccia Observer** dell'Observer Pattern per ricevere eventi quando il contesto globale (`SystemContext` e indirettamente `UIConfiguration`) cambiano.
+
+**Collaborazioni:**
+- Interagisce con `AuthController` per aggiornare le informazioni del profilo utente.
+- Utilizza `SystemContext` per ottenere le informazioni correnti dell'utente.
+- Utilizza `UIConfiguration` per adattare la visualizzazione alle preferenze dell’utente (es. accessibilità) tramite `SystemContext`.
+    - la registrazione come osservatore avviene nel constructor
+
+**Principali attributi:**
+- `controller`: riferimento al `AuthController` che gestisce la logica di aggiornamento del profilo.
+- `User`: oggetto che rappresenta l'utente attualmente autenticato e modificabile.
+- `ObservableCtx`: riferimento al contesto globale `SystemContext` per il rendering/accessibilità.
+
+**Principali metodi:**
+- `render()`: visualizza il menu di gestione del profilo utente e lo stato attuale (ad esempio, campi per visualizzare/modificare username, email, lingua preferita).
+    - (qualsiasi sia la tecnologia UI utilizzata per implementare la GUI)
+    - Adatta la visualizzazione in base alle impostazioni correnti da `SystemContext` (come `UIConfiguration` e `hasUnreadNotifications`)
+- `updateUserProfile()`: invia la richiesta di aggiornamento del profilo al controller tramite `controller.onUpdateUserProfile(user)` dove `user` è l'oggetto utente modificato. Callback richiamata quando l'utente clicca sul bottone per salvare le modifiche del profilo nella UI.
+    - Aggiorna anche `SystemContext` con le nuove informazioni dell'utente (the `User` object) se l'aggiornamento ha successo.
+- `update(e: Event)`: gestisce le notifiche di cambiamento dal contesto globale `SystemContext`, aggiornando la visualizzazione del menu di pianificazione se necessario (invocando `render()`).
+
+**motivazione:**
+- Implementa la view del pattern MVC, separando la presentazione dalla logica di controllo e gestione della diagnostica.
+- Permettendo all’utente di accedere facilmente alle funzionalità di diagnostica e ai risultati.
