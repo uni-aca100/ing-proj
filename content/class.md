@@ -11,6 +11,7 @@ class WashPlanningForm implements Observer is
     controller: WashPlanningController // riferimento al controller
     ObservableCtx: SystemContext // for the rendering config
     options: map<String,String> // like temperature, spinSpeed etc.
+    page: Int // current page number (es. 1 select plan, 2 set options ecc)
 
     // Metodi
     submit()  // chiama controller.onPianificaLavaggio(selectedPiano, dataOra)
