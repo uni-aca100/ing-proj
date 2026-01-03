@@ -139,8 +139,7 @@ class IoTDeviceController is
     onScanDevices(): List<Device> // chiama iotService.discoverDevices()
     onAssociateDevice(device: Device, sessionId: string): bool // chiama iotService.associateDevice(device, sessionId)
     onDissociateDevice(device: Device, sessionId: string): bool // chiama iotService.dissociateDevice(device, sessionId)
-    onTurnOffOptimization(): bool
-    onTurnOnOptimization(): bool
+    setters for optimization
 ```
 // Descrizione: Controller del Presentation Layer che gestisce le operazioni di scansione, associazione e dissociazione dispositivi IoT. Riceve le azioni dal form/menu e le inoltra al servizio di integrazione IoT.
 
@@ -496,7 +495,7 @@ class IoTIntegrationService is
     discoverDevices(): List<Device>
     associateDevice(device: Device, sessionId: string): bool
     dissociateDevice(device: Device, sessionId: string): bool
-    receiveData(device: Device): string
+    listen(device: Device)
     processIoTData(iotData: string)
     turnOffOptimization()
     turnOnOptimization()

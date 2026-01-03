@@ -31,7 +31,7 @@
             <mxPoint x="479.5" y="304" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="kI4JsJNKGlMF9oi-61GH-7" connectable="0" parent="kI4JsJNKGlMF9oi-61GH-6" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="update(DateTime)" vertex="1">
+        <mxCell id="kI4JsJNKGlMF9oi-61GH-7" connectable="0" parent="kI4JsJNKGlMF9oi-61GH-6" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="update()" vertex="1">
           <mxGeometry relative="1" x="-0.0292" y="-2" as="geometry">
             <mxPoint x="1" y="-18" as="offset" />
           </mxGeometry>
