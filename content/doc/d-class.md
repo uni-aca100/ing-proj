@@ -208,13 +208,13 @@ La classe `WashControlMenu` gestisce l’interfaccia utente dedicata al controll
 
 **Ruolo e Responsabilità:**
 La classe `Scheduler` è responsabile della pianificazione e gestione temporale dei cicli di lavaggio. Mantiene la lista delle pianificazioni (`Schedule`).
-Questa classe è l'Observer (**TODO: implementa Observer pattern**) del clock di sistema e implementa il metodo onTick per ricevere notifiche periodiche. Ad ogni tick (effetuato ad intervalli regolari), verifica se ci sono cicli pianificati da avviare e, in caso affermativo, delega l'esecuzione dei cicli al `WashingManager` tramite `WashingManager.avviaLavaggio()` con il piano corrispondente, separando la logica di scheduling dalla logica di esecuzione dei cicli.
+Questa classe è l'Observer **implementa Observer pattern** del clock di sistema e implementa il metodo update per ricevere notifiche periodiche dal clock. Ad ogni tick (effetuato ad intervalli regolari), verifica se ci sono cicli pianificati da avviare e, in caso affermativo, delega l'esecuzione dei cicli al `WashingManager` tramite `WashingManager.avviaLavaggio()` con il piano corrispondente, separando la logica di scheduling dalla logica di esecuzione dei cicli.
 
 **Collaborazioni:**
 - Collabora con `WashPlanningService` per ricevere nuove pianificazioni.
 - Interagisce con `Schedule` per la gestione delle singole pianificazioni.
 - Inoltra le richieste di avvio ciclo a `WashingManager` quando una pianificazione è pronta per essere eseguita.
-- riceve eventi dal clock di sistema o da un timer hardware/software (tramite il metodo `onTick`).
+- riceve eventi dal clock di sistema o da un timer hardware/software (tramite il metodo `onUpdate`).
 
 **Principali attributi:**
 - `schedules`: lista delle pianificazioni attive (`Schedule`)
@@ -222,9 +222,9 @@ Questa classe è l'Observer (**TODO: implementa Observer pattern**) del clock di
 - `storage`: riferimento a `IStorage` per salvare/caricare le pianificazioni nella memoria di massa
 
 **Principali metodi:**
-- `onTick(currentTime: DateTime)`: metodo chiamato periodicamente dal clock di sistema; verifica se ci sono cicli da avviare (la data corrente è superiore alla data di inizio della pianificazione) e, in caso positivo, delega l'esecuzione a `WashingManager` tramite `WashingManager.avviaLavaggio()` con il piano corrispondente.
+- `update(Event: e)`: metodo chiamato periodicamente dal clock di sistema; verifica se ci sono cicli da avviare (la data corrente è superiore alla data di inizio della pianificazione) e, in caso positivo, delega l'esecuzione a `WashingManager` tramite `WashingManager.avviaLavaggio()` con il piano corrispondente.
 - `aggiungiSchedule(schedule: Schedule)`: aggiunge una nuova pianificazione alla lista.
-- `validaSchedule(schedule: Schedule)`: valida una pianificazione prima di aggiungerla alla lista (es. controlla conflitti di orario), richiamata da `WashPlanningService` per la validazione di nuove pianificazioni.
+- `validaSchedule(schedule: Schedule)`: valida una pianificazione prima di aggiungerla alla lista (es. controlla conflitti di orario e di opzioni del piano fornito), richiamata da `WashPlanningService` per la validazione di nuove pianificazioni.
 - `saveInStorage()`: salva le pianificazioni correnti nella memoria di massa tramite l'interfaccia `IStorage.write(...)`, permettendo la persistenza delle pianificazioni in caso di interruzioni.
     - `storage.read(...)` è utilizzato durante l'inizializzazione (Constructor) per caricare le pianificazioni salvate (se presenti)
 
