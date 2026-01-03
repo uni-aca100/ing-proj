@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64; rv:145.0) Gecko/20100101 Firefox/145.0" version="29.2.6">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64; rv:146.0) Gecko/20100101 Firefox/146.0" version="29.2.9">
   <diagram name="Page-1" id="5kqFXCgOmVorJsfCMcVA">
     <mxGraphModel dx="1333" dy="766" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -14,7 +14,7 @@
           <mxGeometry height="580" width="100" x="182" y="360" as="geometry" />
         </mxCell>
         <mxCell id="HDq5IrG6zV9pmiRVn-7S-4" parent="HDq5IrG6zV9pmiRVn-7S-3" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" value="" vertex="1">
-          <mxGeometry height="460" width="10" x="45" y="80" as="geometry" />
+          <mxGeometry height="470" width="10" x="45" y="80" as="geometry" />
         </mxCell>
         <mxCell id="HDq5IrG6zV9pmiRVn-7S-5" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" value=":DiagnosticController" vertex="1">
           <mxGeometry height="580" width="129" x="410" y="360" as="geometry" />
@@ -70,11 +70,11 @@
             <mxPoint x="17" y="-15" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="HDq5IrG6zV9pmiRVn-7S-19" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=block;endFill=1;rounded=0;" value="">
+        <mxCell id="HDq5IrG6zV9pmiRVn-7S-19" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=block;endFill=1;rounded=0;" target="HDq5IrG6zV9pmiRVn-7S-4" value="">
           <mxGeometry relative="1" width="160" as="geometry">
             <Array as="points">
-              <mxPoint x="300" y="455" />
-              <mxPoint x="300" y="475" />
+              <mxPoint x="270" y="455" />
+              <mxPoint x="270" y="900" />
             </Array>
             <mxPoint x="231.5" y="455" as="sourcePoint" />
             <mxPoint x="231.5" y="475" as="targetPoint" />
@@ -82,7 +82,7 @@
         </mxCell>
         <mxCell id="HDq5IrG6zV9pmiRVn-7S-20" connectable="0" parent="HDq5IrG6zV9pmiRVn-7S-19" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="startDiagnostica()" vertex="1">
           <mxGeometry relative="1" x="-0.3439" as="geometry">
-            <mxPoint x="17" y="-15" as="offset" />
+            <mxPoint x="20" y="-145" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="HDq5IrG6zV9pmiRVn-7S-21" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=block;endFill=1;rounded=0;" value="">

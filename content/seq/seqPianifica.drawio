@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64; rv:145.0) Gecko/20100101 Firefox/145.0" version="29.2.4">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64; rv:146.0) Gecko/20100101 Firefox/146.0" version="29.2.9">
   <diagram id="rHvETXIFFIMDh-6NXS9v" name="Page-1">
     <mxGraphModel dx="1333" dy="766" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -14,7 +14,7 @@
           <mxGeometry height="630" width="120" x="390" y="450" as="geometry" />
         </mxCell>
         <mxCell id="00kDrj-ESK7GFke7p2JV-56" parent="00kDrj-ESK7GFke7p2JV-6" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" value="" vertex="1">
-          <mxGeometry height="510" width="10" x="55" y="90" as="geometry" />
+          <mxGeometry height="520" width="10" x="55" y="90" as="geometry" />
         </mxCell>
         <mxCell id="00kDrj-ESK7GFke7p2JV-7" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" value=":WashPlanningController" vertex="1">
           <mxGeometry height="630" width="160" x="580" y="450" as="geometry" />
@@ -63,8 +63,8 @@
         <mxCell id="00kDrj-ESK7GFke7p2JV-19" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=block;endFill=1;rounded=0;" target="00kDrj-ESK7GFke7p2JV-6" value="">
           <mxGeometry relative="1" width="160" as="geometry">
             <Array as="points">
-              <mxPoint x="530" y="567" />
-              <mxPoint x="530" y="600" />
+              <mxPoint x="500" y="567" />
+              <mxPoint x="500" y="1050" />
             </Array>
             <mxPoint x="449.5" y="567" as="sourcePoint" />
             <mxPoint x="649.5" y="567" as="targetPoint" />
@@ -72,7 +72,7 @@
         </mxCell>
         <mxCell id="00kDrj-ESK7GFke7p2JV-37" connectable="0" parent="00kDrj-ESK7GFke7p2JV-19" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Submit()" vertex="1">
           <mxGeometry relative="1" x="0.035" as="geometry">
-            <mxPoint x="-30" y="-36" as="offset" />
+            <mxPoint y="-269" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="00kDrj-ESK7GFke7p2JV-20" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=block;endFill=1;rounded=0;" value="">
@@ -81,7 +81,7 @@
             <mxPoint x="869.5" y="664" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="00kDrj-ESK7GFke7p2JV-38" connectable="0" parent="00kDrj-ESK7GFke7p2JV-20" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="pianificaLavaggio(Piano, data)" vertex="1">
+        <mxCell id="00kDrj-ESK7GFke7p2JV-38" connectable="0" parent="00kDrj-ESK7GFke7p2JV-20" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="pianificaLavaggio(Piano, data,op)" vertex="1">
           <mxGeometry relative="1" x="-0.1955" y="-1" as="geometry">
             <mxPoint x="23" y="-10" as="offset" />
           </mxGeometry>
@@ -174,7 +174,7 @@
             <mxPoint x="655" y="640" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="V5p-vZ_vz8-iRPgNAJtJ-2" connectable="0" parent="V5p-vZ_vz8-iRPgNAJtJ-1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="onPianificaLavaggio(Piano, Date)" vertex="1">
+        <mxCell id="V5p-vZ_vz8-iRPgNAJtJ-2" connectable="0" parent="V5p-vZ_vz8-iRPgNAJtJ-1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="onPianificaLavaggio(Piano, Date, op)" vertex="1">
           <mxGeometry relative="1" x="0.035" as="geometry">
             <mxPoint x="1" y="-17" as="offset" />
           </mxGeometry>

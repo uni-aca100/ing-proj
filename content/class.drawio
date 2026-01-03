@@ -701,7 +701,7 @@
         </mxCell>
         <mxCell id="WW-6P7HCMidsh4ocaQ-b-164" connectable="0" parent="WW-6P7HCMidsh4ocaQ-b-163" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="N" vertex="1">
           <mxGeometry relative="1" x="-0.55" y="-1" as="geometry">
-            <mxPoint y="-9" as="offset" />
+            <mxPoint x="-45" y="-12" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="WW-6P7HCMidsh4ocaQ-b-165" connectable="0" parent="WW-6P7HCMidsh4ocaQ-b-163" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Sessioni&lt;br&gt;Autenticate" vertex="1">
