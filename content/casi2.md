@@ -1,5 +1,5 @@
 
-**Caso d’uso:** Modifica configurazione UI  
+**1 Caso d’uso:** Modifica configurazione UI  
 **Attore principale:** Utente  
 **Descrizione:**  
 L’utente accede al menu di configurazione dell’interfaccia utente e modifica una o più opzioni disponibili (es. tema, contrasto, dimensione font, lingua, modalità accessibilità). Le modifiche vengono applicate immediatamente o salvate per le sessioni future.
@@ -24,7 +24,7 @@ L’utente accede al menu di configurazione dell’interfaccia utente e modifica
 
 ---
 
-**Caso d’uso:** Cerca dispositivi IoT  
+**2 Caso d’uso:** Cerca dispositivi IoT  
 **Attore principale:** Utente  
 **Attore secondario:** Dispositivi IoT esterni
 **Descrizione:**  
@@ -50,7 +50,7 @@ L’utente avvia la ricerca di dispositivi IoT compatibili presenti nella rete d
 
 ---
 
-**Caso d’uso:** Elimina notifiche  
+**3 Caso d’uso:** Elimina notifiche  
 **Attore principale:** Utente  
 **Descrizione:**  
 L’utente accede al menu delle notifiche tramite l’interfaccia e seleziona una o più notifiche da eliminare. Il sistema rimuove le notifiche selezionate dalla lista e aggiorna la visualizzazione. È possibile anche eliminare tutte le notifiche in un’unica operazione.
@@ -74,7 +74,7 @@ L’utente accede al menu delle notifiche tramite l’interfaccia e seleziona un
 
 ---
 
-**Caso d’uso:** Leggi notifiche  
+**4 Caso d’uso:** Leggi notifiche  
 **Attore principale:** Utente  
 **Descrizione:**  
 L’utente accede al menu delle notifiche tramite l’interfaccia e visualizza la lista delle notifiche ricevute dal sistema (es. errori). L’utente può selezionare una notifica per leggerne il dettaglio.
@@ -98,7 +98,7 @@ L’utente accede al menu delle notifiche tramite l’interfaccia e visualizza l
 
 ---
 
-**Caso d’uso:** Esecuzione Ciclo di Lavaggio  
+**5 Caso d’uso:** Esecuzione Ciclo di Lavaggio  
 **Attore principale:** Sistema
 **Descrizione:**  
 Il sistema controlla e coordina l’esecuzione del ciclo di lavaggio, comandando la lavatrice che gestisce tutte le operazioni (riempimento acqua, lavaggio, risciacquo, centrifuga, scarico) secondo i parametri ricevuti.
@@ -127,7 +127,7 @@ Il sistema controlla e coordina l’esecuzione del ciclo di lavaggio, comandando
 
 ---
 
-**Caso d’uso:** Pausa ciclo  
+**6 Caso d’uso:** Pausa ciclo  
 **Attore principale:** Utente
 **Descrizione:**  
 L’utente può richiedere la sospensione temporanea del ciclo di lavaggio in corso. La lavatrice si mette in pausa e attende un comando di ripresa o annullamento.
@@ -151,7 +151,7 @@ L’utente può richiedere la sospensione temporanea del ciclo di lavaggio in co
 
 ---
 
-**Caso d’uso:** Riprendi ciclo
+**7 Caso d’uso:** Riprendi ciclo
 **Attore principale:** Utente  
 **Descrizione:**  
 L’utente può richiedere la ripresa del ciclo di lavaggio precedentemente messo in pausa.
@@ -175,7 +175,7 @@ L’utente può richiedere la ripresa del ciclo di lavaggio precedentemente mess
 
 ---
 
-**Caso d’uso:** Annulla ciclo  
+**8 Caso d’uso:** Annulla ciclo  
 **Attore principale:** Utente  
 **Descrizione:**  
 L’utente può richiedere l’annullamento del ciclo di lavaggio durante la pausa.
@@ -201,7 +201,7 @@ L’utente può richiedere l’annullamento del ciclo di lavaggio durante la pau
 
 ---
 
-**Caso d’uso:** Pianifica Lavaggio  
+**9 Caso d’uso:** Pianifica Lavaggio  
 **Attore principale:** Utente  
 **Descrizione:**  
 L’utente programma l’esecuzione di un ciclo di lavaggio, scegliendo se avviarlo immediatamente o in un momento futuro tramite lo scheduler del sistema.
@@ -224,7 +224,7 @@ L’utente programma l’esecuzione di un ciclo di lavaggio, scegliendo se avvia
 
 ---
 
-**Caso d’uso:** Avvio Lavaggio  
+**10 Caso d’uso:** Avvio Lavaggio  
 **Attore principale:** Utente  
 **Descrizione:**  
 Corrisponde a una pianificazione con esecuzione immediata: l’utente avvia subito un ciclo di lavaggio.
@@ -248,7 +248,7 @@ Corrisponde a una pianificazione con esecuzione immediata: l’utente avvia subi
 
 ---
 
-**Caso d’uso:** Avvia Diagnostica  
+**11 Caso d’uso:** Avvia Diagnostica  
 **Attore principale:** Utente
 **Descrizione:**  
 L’utente può avviare una procedura di diagnostica. La diagnostica verifica lo stato dei componenti della lavatrice, rileva eventuali anomalie o malfunzionamenti e fornisce un report all’utente.
@@ -273,7 +273,7 @@ L’utente può avviare una procedura di diagnostica. La diagnostica verifica lo
 
 ---
 
-**Caso d’uso:** Reset Lavatrice  
+**12 Caso d’uso:** Reset Lavatrice  
 **Attore principale:** Utente
 **Descrizione:**  
 L’utente, tramite l’interfaccia può avviare una procedura di reset per riportare la lavatrice nello stato di fabbrica. Il reset interrompe tutte le operazioni in corso, scarica eventuale acqua residua, azzera errori e blocchi, e prepara la lavatrice per un nuovo ciclo.
@@ -298,7 +298,7 @@ L’utente, tramite l’interfaccia può avviare una procedura di reset per ripo
 
 ---
 
-**Caso d’uso:** ottimizzazione Consumi IoT   
+**13 Caso d’uso:** ottimizzazione Consumi IoT   
 **Attore principale:** Sistema  
 **Attore secondario:** Dispositivi IoT esterni (es. contatori intelligenti)  
 **Descrizione:**  
@@ -323,7 +323,7 @@ Il sistema si integra con altri dispositivi IoT presenti nell’abitazione (come
 
 ---
 
-**Caso d’uso:** Disattiva Ottimizzazione IoT  
+**14 Caso d’uso:** Disattiva Ottimizzazione IoT  
 **Attore principale:** Utente  
 **Descrizione:**  
 L’utente può disattivare in qualsiasi momento l’ottimizzazione dei consumi energetici basata sull’integrazione con dispositivi IoT. Una volta disattivata, il sistema non utilizza più i dati dei dispositivi IoT per regolare i cicli di lavaggio.
@@ -346,7 +346,7 @@ L’utente può disattivare in qualsiasi momento l’ottimizzazione dei consumi 
 
 ---
 
-**Caso d’uso:** Attiva Ottimizzazione IoT  
+**15 Caso d’uso:** Attiva Ottimizzazione IoT  
 **Attore principale:** Utente  
 **Descrizione:**  
 L’utente può riattivare in qualsiasi momento la strategia di ottimizzazione dei consumi energetici basata sull’integrazione con dispositivi IoT, dopo che era stata precedentemente disattivata. Il sistema riprende a utilizzare i dati dei dispositivi IoT per ottimizzare i cicli di lavaggio.
@@ -369,7 +369,7 @@ L’utente può riattivare in qualsiasi momento la strategia di ottimizzazione d
 
 ---
 
-**Caso d’uso:** Associa Dispositivo IoT  
+**16 Caso d’uso:** Associa Dispositivo IoT  
 **Attore principale:** Utente  
 **Attore secondario:** Dispositivi IoT esterni  
 **Descrizione:**  
@@ -394,7 +394,7 @@ L’utente può associare un nuovo dispositivo IoT compatibile (es. termostato, 
 
 ---
 
-**Caso d’uso:** Dissocia Dispositivo IoT  
+**17 Caso d’uso:** Dissocia Dispositivo IoT  
 **Attore principale:** Utente  
 **Attore secondario:** Dispositivi IoT esterni  
 **Descrizione:**  
@@ -421,7 +421,7 @@ L’utente può dissociare un dispositivo IoT precedentemente associato alla lav
 
 ---
 
-**Caso d’uso:** Login  
+**18 Caso d’uso:** Login  
 **Attore principale:** Utente  
 **Descrizione:**  
 L’utente inserisce le proprie credenziali (username/email e password) per autenticarsi nel sistema della lavatrice intelligente, accedendo così alle funzionalità personalizzate e protette.
@@ -446,7 +446,7 @@ L’utente inserisce le proprie credenziali (username/email e password) per aute
 
 ---
 
-**Caso d’uso:** Recupero password  
+**19 Caso d’uso:** Recupero password  
 **Attore principale:** Utente  
 **Descrizione:**  
 L’utente che ha dimenticato la password può avviare la procedura di recupero, ricevendo un email con una nuova password per accedere nuovamente al sistema.
@@ -477,7 +477,7 @@ L’utente che ha dimenticato la password può avviare la procedura di recupero,
 
 ---
 
-**Caso d’uso:** Logout
+**20 Caso d’uso:** Logout
 **Attore principale:** Utente
 **Descrizione:**  
 L’utente autenticato può terminare volontariamente la propria sessione, disconnettendosi dal sistema della lavatrice intelligente. Il logout invalida la sessione attiva, impedendo ulteriori operazioni protette fino a nuovo login.
@@ -501,7 +501,7 @@ L’utente autenticato può terminare volontariamente la propria sessione, disco
 
 ---
 
-**Caso d’uso:** Attiva Comandi Vocali  
+**21 Caso d’uso:** Attiva Comandi Vocali  
 **Attore principale:** Utente  
 **Descrizione:**  
 L’utente può attivare la funzionalità di controllo vocale della lavatrice tramite l’interfaccia (app o display). Una volta attivati, i comandi vocali permettono di impartire istruzioni alla lavatrice usando la voce.
@@ -523,7 +523,7 @@ L’utente può attivare la funzionalità di controllo vocale della lavatrice tr
 
 ---
 
-**Caso d’uso:** Disattiva Comandi Vocali  
+**22 Caso d’uso:** Disattiva Comandi Vocali  
 **Attore principale:** Utente  
 **Descrizione:**  
 L’utente può disattivare la funzionalità di controllo vocale della lavatrice tramite l’interfaccia (app o display). Una volta disattivati, i comandi vocali non sono più accettati dal sistema.
@@ -545,7 +545,7 @@ L’utente può disattivare la funzionalità di controllo vocale della lavatrice
 
 ---
 
-**Caso d’uso:** Registra nuovo profilo utente  
+**23Caso d’uso:** Registra nuovo profilo utente  
 **Attore principale:** Utente  
 **Descrizione:**  
 L’utente accede alla funzione di registrazione tramite l’interfaccia e inserisce i dati richiesti (es. nome, email, password, ecc.). Il sistema crea un nuovo profilo utente e conferma l’avvenuta registrazione. In caso di dati non validi o già utilizzati, il sistema segnala l’errore e richiede la correzione.
@@ -573,7 +573,7 @@ L’utente accede alla funzione di registrazione tramite l’interfaccia e inser
 
 ---
 
-**Caso d’uso:** Modifica profilo utente  
+**24 Caso d’uso:** Modifica profilo utente  
 **Attore principale:** Utente  
 **Descrizione:**  
 L’utente autenticato accede alla sezione di gestione del profilo tramite l’interfaccia e modifica uno o più dati personali (es. nome, email, password, preferenze). Il sistema verifica la validità dei nuovi dati, aggiorna il profilo utente e conferma l’avvenuta modifica. In caso di dati non validi o già utilizzati (es. email), il sistema segnala l’errore.
