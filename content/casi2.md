@@ -50,10 +50,6 @@ L’utente avvia la ricerca di dispositivi IoT compatibili presenti nella rete d
 
 ---
 
-Ecco una proposta di caso d’uso testuale per "Elimina notifiche", pronta per la documentazione e per la successiva rappresentazione nel diagramma UML dei casi d’uso:
-
----
-
 **Caso d’uso:** Elimina notifiche  
 **Attore principale:** Utente  
 **Descrizione:**  
@@ -75,10 +71,6 @@ L’utente accede al menu delle notifiche tramite l’interfaccia e seleziona un
 
 **Requisiti:**  
 - Non devono essere eliminate notifiche non selezionate.
-
----
-
-Ecco una proposta di caso d’uso testuale per "Leggi notifiche", pronta per la documentazione e per la successiva rappresentazione nel diagramma UML dei casi d’uso:
 
 ---
 
