@@ -13,7 +13,7 @@ Inoltre è conforme al pattern **Observer** per permettere ad altre classi (es. 
 
 **Principali attributi:**
 - `sessionId`: identificatore della sessione utente corrente (per la lavatrice, non per l'app mobile), utilizzata per autenticare le richieste, il valore è null altrimenti
-- `currentUser`: riferimento all'utente attualmente loggato, null se nessun utente è autenticato (permette di repererire informazioni come la lingua preferita, ecc.), settato insieme alla `sessionId` dopo un login con successo (dalla classe `loginForm`)
+- `currentUser`: riferimento all'utente attualmente loggato, null se nessun utente è autenticato (permette di repererire informazioni come la lingua preferata, ecc.), settato insieme alla `sessionId` dopo un login con successo (dalla classe `loginForm`)
 - `config` (`UIConfiguration`): istanza della configurazione UI globale
 - `observers` (`List<Observer>`): lista degli osservatori registrati per le notifiche di cambiamento del contesto
 - `hasUnreadNotifications`: flag per indicare la presenza di notifiche non lette, permette di mostrare un indicatore nell'interfaccia utente
@@ -112,7 +112,7 @@ La classe `ConfigurationController` funge da intermediario tra il menu di config
 
 **motivazione:**
 - Controller in linea con il pattern MVC. permette di separare la logica di gestione delle impostazioni dalla loro rappresentazione e interfaccia utente.
-- Facilita l’estendibilità e il riutilizzo riducendo la ridondanza, molteplici fonti di input possono essere gestite in modo uniforme (es. UI, comandi vocali, comandi remoti) dal controller (non interagendo direttamente con `UIConfiguration`).
+- Facilita l'estendibilità e il riutilizzo riducendo la ridondanza, molteplici fonti di input possono essere gestite in modo uniforme (es. UI, comandi vocali, comandi remoti) dal controller (non interagendo direttamente con `UIConfiguration`).
 
 ---
 
@@ -427,7 +427,7 @@ La classe `DiagnosticReport` rappresenta il risultato di una procedura di diagno
 - `errori`: `List<ErroreLavatrice>` , lista degli errori/warning rilevati durante la diagnostica.
 
 **Principali metodi:**
-- setter and getter per gli attributi, impliciti.
+- setter e getter per gli attributi, impliciti.
 
 ---
 
@@ -448,7 +448,7 @@ L'interfaccia `IStorage` definisce i metodi standard per l'accesso e la gestione
 ### Classe AuthenticationService
 **Ruolo e Responsabilità:**
 La classe `AuthenticationService` è responsabile della gestione dell'autenticazione degli utenti che interagiscono con la lavatrice intelligente. Fornisce metodi per verificare le credenziali degli utenti e gestire le sessioni di accesso.
-Il servizio è implementato localmente e non si appoggia a servizi esterni. L'autenticazione per l'interazione fisica (tramite UI dello schermo) con la Lavatrice intelligente è destinata a un singolo utente (amministratore) che può accedere a funzionalità sensibili come la diagnostica (ma è possibile avere multi-device e quindi molteplici utenti su diversi dispositivi es. mobile).
+Il servizio è implementato localmente e non si appoggia a servizi esterni. L'autenticazione per l'interazione fisica (tramite UI dello schermo) con la Lavatrice intelligente è destinata a un singolo utente (amministratore) che può accedere a funzionalità sensibili come la diagnostica (ma è possibile avere multi-device e quindi molteplici sessioni su diversi dispositivi es. mobile).
 
 **Collaborazioni:**
 - Utilizzata da componenti che richiedono l'autenticazione, come `DiagnosticHandler`, `SystemContext`, `CommandDispatcher` ecc. per verificare i permessi degli utenti prima di eseguire operazioni sensibili.
@@ -475,7 +475,7 @@ Il servizio è implementato localmente e non si appoggia a servizi esterni. L'au
     - In caso di ricezione valida, autentica il dispositivo mobile associato e lo aggiunge alla lista delle sessioni attive.
     - utilizzato per facilitare l'accesso degli utenti tramite dispositivi mobili.
 - `loginWithQR(token: string): bool`: verifica il token QR fornito (one-time token); se valido, crea una nuova sessione, la aggiunge alla lista delle sessioni attive e restituisce true. Se il token non è valido, restituisce false.
-- `updateUserProfile(user: User): bool`: aggiorna le informazioni del profilo utente (es. email, lingua preferita) per l'utente specificato. Restituisce true se l'aggiornamento è avvenuto con successo, false altrimenti.
+- `updateUserProfile(user: User): bool`: aggiorna le informazioni del profilo utente (es. email, lingua preferata) per l'utente specificato. Restituisce true se l'aggiornamento è avvenuto con successo, false altrimenti.
 
 **motivazione:**
 - Fornisce un meccanismo di autenticazione centralizzato per garantire che solo utenti autorizzati (amministratori) possano accedere a funzionalità sensibili della lavatrice intelligente.
@@ -552,3 +552,95 @@ La classe `ProfileView` gestisce l’interfaccia utente dedicata alla visualizza
 **motivazione:**
 - Implementa la view del pattern MVC, separando la presentazione dalla logica di controllo e gestione della diagnostica.
 - Permettendo all’utente di accedere facilmente alle funzionalità di diagnostica e ai risultati.
+
+---
+
+### Classe Device
+
+**Ruolo e Responsabilità:**
+La classe `Device` rappresenta un dispositivo esterno che può interagire con la lavatrice intelligente. Può essere un dispositivo IoT (es. termostato, contatore intelligente, sensore), un dispositivo per il controllo remoto (es. smartphone, tablet). Fornisce una rappresentazione unificata dei metadati.
+
+**Collaborazioni:**
+- Utilizzata da `IoTIntegrationService` per discovery, associazione e gestione dei dispositivi IoT.
+- Utilizzata da `RemoteControlManager` per la registrazione, la verifica dell'autenticazione e comunicazione con dispositivi remoti.
+    - Verificata da `AuthenticationService` durante le procedure di associazione/autenticazione. Il dispositivo collegato e autenticato è associato a una `Session`.
+
+**Principali attributi:**
+- `id: string`: identificatore univoco del dispositivo (UUID o MAC).
+    - usato per distinguere i dispositivi nella rete o durante l'associazione, inoltre è utilizzato per la registrazione e la gestione delle sessioni dei dispositivi.
+- `nome: string`: nome leggibile assegnato al dispositivo.
+- `tipo: string`: categoria del dispositivo (es. "IoT", "Remote", ecc.).
+- `ipAddress: string`: indirizzo IP usato per la comunicazione, se applicabile.
+- `port: int`: porta di comunicazione, se applicabile.
+
+**Principali metodi:**
+- setter e getter impliciti per tutti gli attributi.
+
+**motivazione:**
+- Fornire una rappresentazione uniforme e riutilizzabile dei dispositivi che interagiscono con la lavatrice intelligente facilita la discovery, l'associazione e la gestione dello stato dei dispositivi.
+- Centralizzare gli attributi e le operazioni comuni riduce la duplicazione di codice tra `IoTIntegrationService`, `RemoteControlManager` e altri componenti che operano su dispositivi esterni.
+
+### Classe RemoteControlManager
+
+**Ruolo e Responsabilità:**
+La classe `RemoteControlManager` gestisce la registrazione, l'autenticazione e la comunicazione con dispositivi remoti che controllano la lavatrice (es. app mobile, tablet). Si occupa di mantenere le connessioni attive, inoltrare comandi ricevuti al `RemoteCommandInterpreter` e assicurare che solo dispositivi autorizzati possano inviare comandi operativi.
+
+**Collaborazioni:**
+- Collabora con `RemoteCommandInterpreter` per l'interpretazione e l'inoltro dei comandi ricevuti dai dispositivi remoti.
+- Si interfaccia con `AuthenticationService` per verificare e gestire l'autenticazione dei dispositivi remoti e per associare eventuali `Session` alle connessioni.
+- Utilizza `NetworkInterface` (Hardware Abstraction Layer) per stabilire e mantenere le comunicazioni di rete con i dispositivi remoti.
+- Mantiene e persiste l'elenco dei dispositivi attraverso `IStorage` per il restore dopo riavvii.
+
+**Principali attributi:**
+- `devices: List<Device>` elenco dei dispositivi remoti registrati e/o connessi.
+- `network: NetworkInterface` interfaccia di rete per aprire canali di comunicazione.
+- `auth: AuthenticationService` riferimento al servizio di autenticazione per validare device e sessioni.
+- `interpreter: RemoteCommandInterpreter` componente che interpreta i messaggi ricevuti dai device e li inoltra al dispatcher.
+- `storage: IStorage` interfaccia per salvare/caricare la lista dei dispositivi e le relative informazioni.
+
+**Principali metodi:**
+- `listen(): void` avvia il listener di rete per accettare nuove connessioni dai dispositivi remoti.
+    - Una volta avviata la connessione, crea un oggetto `Device` provvisorio e chiama `isAuthenticatedDevice()` per eseguire l'autenticazione attraverso `AuthenticationService`.
+    - Se l'autenticazione ha successo, chiama `accept()` per registrare il dispositivo e avvia `handleCommunication()` in un thread separato per gestire la comunicazione continua.
+- `accept(device: Device): bool` accetta un nuovo dispositivo (dopo autenticazione/handshake), lo aggiunge a `devices` e ne persiste lo stato; restituisce true se l'accettazione ha successo.
+- `remove(deviceId: string): bool` rimuove un dispositivo registrato/connesso dall'elenco e aggiorna lo storage; restituisce true in caso di successo.
+- `handleCommunication(device: Device): void` gestisce il canale di comunicazione con un singolo dispositivo (ricezione messaggi e inoltro all'`interpreter`).
+- `broadcast(data: string): void` invia dati a tutti i dispositivi connessi (es. notifiche di stato).
+- `saveDevicesInStorage(): void` serializza e salva la lista dei dispositivi su `IStorage`.
+    - nel costruttore carica la lista dei dispositivi dallo storage all'avvio.
+
+**Comportamento operativo / Flusso semplificato:**
+1. `listen()` avvia l'accettazione di connessioni; quando arriva una nuova connessione viene creato un `Device` provvisorio.
+2. `isAuthenticatedDevice()` verifica le credenziali/token tramite `AuthenticationService`.
+3. Se l'autenticazione ha successo, `accept()` registra il device e `handleCommunication()` gestisce il canale (eventuali comandi in ingresso vengono passati a `RemoteCommandInterpreter`) in un thread separato.
+4. Se un device invia un comando valido, il `RemoteCommandInterpreter` lo interpreta e lo inoltra al `CommandDispatcher` per essere eseguito dai controller appropriati.
+
+**motivazione:**
+- Centralizzare la gestione delle connessioni remote semplifica la sicurezza, il monitoraggio e la persistenza dei dispositivi autorizzati.
+- Decoupling tra comunicazione di rete, autenticazione e interpretazione dei comandi migliora la manutenibilità e testabilità del sistema.
+
+### Classe RemoteCommandInterpreter
+
+**Ruolo e Responsabilità:**
+La classe `RemoteCommandInterpreter` è responsabile dell'elaborazione dei messaggi ricevuti dai dispositivi remoti (app mobile, tablet) e della loro traduzione in comandi comprensibili dal Presentation Layer tramite il `CommandDispatcher`. Si occupa del parsing, della validazione sintattica e semantica di comandi remoti e dell'eventuale conversione.
+
+**Collaborazioni:**
+- Riceve dati da `RemoteControlManager` (gestore delle connessioni di rete).
+- Utilizza `CommandDispatcher` per inoltrare i comandi interpretati ai controller appropriati del Presentation Layer.
+
+**Principali attributi:**
+- `dispatcher: CommandDispatcher` riferimento al componente che effettua il dispatch dei comandi verso i controller.
+
+**Principali metodi:**
+- `interpretCommand(raw: string): String?` esegue il parsing del payload grezzo, valida il comando e ritorna un commando strutturato o un errore/empty se non valido.
+    - Utilizza da `RemoteControlManager` per processare i messaggi in arrivo.
+- `forwardToDispatcher(cmd: string, sessionId: string)`, inoltra il comando a `dispatcher.dispatch(cmd, sessionId)`.
+    - invocato da `interpretCommand()` se il comando ricevuto è valido.
+
+**Comportamento operativo / Flusso semplificato:**
+1. `RemoteControlManager` riceve un messaggio da un device e lo inoltra a `RemoteCommandInterpreter.interpretCommand()`.
+2. Se il parsing ha successo, `forwardToDispatcher()` viene chiamato per inoltrare il comando.
+
+**motivazione:**
+- Separare l'interpretazione dal dispatching (Single Responsibility Principle) rende il sistema più manutenibile e testabile: è possibile aggiungere nuove regole di validazione senza toccare il dispatcher o il manager delle connessioni.
+- Riduce il rischio che messaggi malformati o non autorizzati raggiungano i controller operativi, migliorando la robustezza del sistema.
