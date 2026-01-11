@@ -644,3 +644,33 @@ La classe `RemoteCommandInterpreter` è responsabile dell'elaborazione dei messa
 **motivazione:**
 - Separare l'interpretazione dal dispatching (Single Responsibility Principle) rende il sistema più manutenibile e testabile: è possibile aggiungere nuove regole di validazione senza toccare il dispatcher o il manager delle connessioni.
 - Riduce il rischio che messaggi malformati o non autorizzati raggiungano i controller operativi, migliorando la robustezza del sistema.
+
+### Classe VoiceCommandInterpreter
+
+**Ruolo e Responsabilità:**
+La classe `VoiceCommandInterpreter` si occupa di ricevere segnali vocali dal layer hardware (microfono / modulo di riconoscimento vocale), trasformarli in comandi strutturati e inoltrarli al Presentation Layer tramite il `CommandDispatcher`. e applica i controlli di sicurezza necessari prima di dispatchare il comando.
+La classe implementa **l'interfaccia Observer dell'Observer Pattern** per ricevere eventi/segali vocali.
+
+**Collaborazioni:**
+- Riceve eventi/segali da `VoiceInputDevice` (Hardware Abstraction Layer), la quale è il soggetto osservato nel pattern Observer.
+    - La registrazione come osservatore avviene nel constructor.
+- Interroga `AuthenticationService` / `SystemContext` per verificare che i comandi vocali siano abilitati e che la sessione correntemente attiva (se richiesta) sia valida.
+- Utilizza `CommandDispatcher` per inoltrare i comandi interpretati ai controller appropriati del Presentation Layer.
+
+**Principali attributi:**
+- `dispatcher: CommandDispatcher` riferimento al dispatcher per inoltrare i comandi interpretati.
+- `authService: AuthenticationService` riferimento per verifiche di sessione/autorizzazione.
+- `ctx: SystemContext` contesto globale per controllare flag come `voiceCommandsEnabled`.
+
+**Principali metodi:**
+- `Update(event): void` metodo conforme all'Observer Pattern, chiamato dall'`VoiceInputDevice` quando è disponibile il segnale vocale, che è pronto per essere elaborato.
+    - `event` oltre al tipo contienei dati grezzi dell'audio e i metadati associati.
+    - inocato automaticamente `interpretaComandoVocale(rawAudio: string): string`
+- `interpretaComandoVocale(rawAudio: string): string` converte l'audio in testo, esegue l'analisi del testo per estrarre i parametri, derivando i comandi
+    - verifica che il comando sia consentito (es. autenticazione tramite `AuthenticationService`).
+    -  inoltra il comando a `dispatcher.dispatch(cmd, sessionId)` dopo aver eseguito tutte le verifiche di sicurezza e coerenza.
+    - la sessione è rappresentata da `SystemContext.currentSessionId` se `voiceCommandsRequireAuthentication` è true.
+
+**motivazione:**
+- Centralizzare l'interpretazione vocale consente di mantenere separata la logica del riconoscimento vocale dalla presentazione e dal dispatching dei comandi, migliorando manutenibilità e testabilità.
+- L'integrazione stretta con `AuthenticationService` e `SystemContext` garantisce che i comandi vocali rispettino le politiche di sicurezza e le preferenze dell'utente (es. abilitazione/disabilitazione comandi vocali).
