@@ -343,8 +343,8 @@ La classe `DiagnosticHandler` è responsabile della gestione delle procedure di 
 - Riceve richieste di diagnostica da `DiagnosticController` (Presentation Layer), per l'esecuzione o l'ispezione dell'ultimo test.
 - Interagisce con l’`Hardware Layer` tramite interfacce dedicate per eseguire i test sui componenti (motore, sensori, valvole, ecc.).
 - Collabora con `NotificationService` per inviare notifiche all’utente sull’esito della diagnostica.
-- utilizza `DiagnosticReport` per rappresentare i risultati della diagnostica.
-- utilizza `AuthenticationService` per verificare che l’utente abbia i permessi necessari per eseguire la diagnostica.
+- Utilizza `DiagnosticReport` per rappresentare i risultati della diagnostica.
+- Utilizza `AuthenticationService` per verificare che l’utente abbia i permessi necessari per eseguire la diagnostica.
 
 **Principali attributi:**
 - `hardwareInterface`: riferimento all’interfaccia hardware per l’esecuzione dei test.
@@ -369,7 +369,7 @@ La classe `DiagnosticController` è il controller del Presentation Layer dedicat
 **Collaborazioni:**
 - Riceve input da `DiagnosticMenu` (UI/menu di diagnostica) o da sistemi esterni tramite `CommandDispatcher`.
 - Inoltra le richieste operative a `DiagnosticHandler` (Application Layer) per l’esecuzione della diagnostica.
-- utilizza `DiagnosticReport` per rappresentare i risultati della diagnostica.
+- Utilizza `DiagnosticReport` per rappresentare i risultati della diagnostica.
 
 **Principali attributi:**
 - `diagnosticHandler`: riferimento al componente che esegue la diagnostica (`DiagnosticHandler`).
@@ -674,3 +674,43 @@ La classe implementa **l'interfaccia Observer dell'Observer Pattern** per riceve
 **motivazione:**
 - Centralizzare l'interpretazione vocale consente di mantenere separata la logica del riconoscimento vocale dalla presentazione e dal dispatching dei comandi, migliorando manutenibilità e testabilità.
 - L'integrazione stretta con `AuthenticationService` e `SystemContext` garantisce che i comandi vocali rispettino le politiche di sicurezza e le preferenze dell'utente (es. abilitazione/disabilitazione comandi vocali).
+
+---
+
+### Classe NotificationService
+
+**Ruolo e Responsabilità:**
+La classe `NotificationService` è responsabile della gestione centralizzata delle notifiche generate dal sistema della lavatrice intelligente. Si occupa della creazione, memorizzazione, invio e gestione delle notifiche destinate all’utente, come eventi di sistema, errori, stati del ciclo di lavaggio, ecc. Garantisce che le componenti del sistema possano inviare notifiche in modo uniforme e che l’utente possa visualizzarle tramite l’interfaccia.
+
+**Collaborazioni:**
+- Riceve richieste di invio notifica da componenti come `WashingManager`, `DiagnosticHandler`, `ResetHandler`, ecc.
+- Collabora con `NotificationMenu` e `NotificationController` per la visualizzazione, lettura ed eliminazione delle notifiche da parte dell’utente.
+- Utilizza l’interfaccia `IStorage` per la persistenza delle notifiche nella memoria di massa.
+- Gestisce oggetti di tipo `Notification` che rappresentano le singole notifiche.
+
+**Principali attributi:**
+- `notifications`: lista delle notifiche attualmente gestite dal sistema (`List<Notification>`).
+- `storage`: riferimento a `IStorage` per salvare/caricare le notifiche nella memoria di massa.
+- `SystemContext`: riferimento al contesto globale per aggiornare il flag `hasUnreadNotifications` quando nuove notifiche vengono aggiunte o lette.
+    - Durante l’inizializzazione (Constructor), carica le notifiche salvate (se presenti) tramite `storage.read(...)`.
+- `remoteControlManager`: riferimento al `RemoteControlManager` per inviare notifiche ai dispositivi remoti connessi (es. app mobile).
+
+**Principali metodi:**
+- `push(notification: Notification)`: aggiunge una nuova notifica alla lista e la salva in memoria persistente. Può essere invocato da qualsiasi componente che necessita di notificare l’utente.
+    - Aggiorna il flag `hasUnreadNotifications` in `SystemContext` per indicare la presenza di nuove notifiche non lette.
+    - Invia la notifica ai dispositivi remoti connessi tramite `remoteControlManager.broadcast(...)` e come parametro le informazioni notifica stessa.
+- `getAll(): List<Notification>`: restituisce la lista completa delle notifiche attualmente presenti nel sistema, per la visualizzazione nell’interfaccia utente.
+- `get(id: string): Notification`: restituisce la notifica identificata con un identificativo specificato.
+- `markAsRead(id: string)`: segna come letta la notifica corrispondente all’id fornito.
+    - Aggiorna il flag `hasUnreadNotifications` in `SystemContext` se non ci sono più notifiche non lette.
+- `delete(id: string)`: elimina la notifica con l’id specificato dalla lista e dalla memoria persistente.
+- `clearAll()`: elimina tutte le notifiche presenti nel sistema.
+- `saveNotificationInStorage()`: salva lo stato corrente delle notifiche nella memoria di massa tramite l’interfaccia `IStorage.write(...)`, garantendo la persistenza anche in caso di riavvio o interruzione.
+    - Durante l’inizializzazione (Constructor), carica le notifiche salvate (se presenti) tramite `storage.read(...)`.
+
+**motivazione:**
+- Centralizza la gestione delle notifiche, semplificando l’invio e la visualizzazione dei messaggi all’utente.
+- Garantisce la persistenza delle notifiche e la loro accessibilità anche dopo riavvii o interruzioni.
+- Favorisce la separazione delle responsabilità tra la logica di business e la presentazione delle notifiche, migliorando la manutenibilità e l’estendibilità del sistema.
+
+---
